@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages - CarWay{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="fas fa-envelope"></i> Messages
+    </h1>
+    
+    <div class="row">
+        <!-- Conversation List -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Conversations</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for conversation in conversations %}
+                        {% with last_message=conversation.get_last_message %}
+                            <a href="{% url 'conversation-detail' conversation.id %}" class="list-group-item list-group-item-action {% if conversation.unread_count > 0 %}fw-bold{% endif %}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        {% if conversation.listing.user == request.user %}
+                                            {% for participant in conversation.participants.all %}
+                                                {% if participant != request.user %}
+                                                    {{ participant.username }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ conversation.listing.user.username }}
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ last_message.created_at|timesince }}</small>
+                                </div>
+                                
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <small class="text-truncate me-2">
+                                        <span class="text-muted">
+                                            {% if last_message.sender == request.user %}You: {% endif %}
+                                        </span>
+                                        {{ last_message.content|truncatechars:50 }}
+                                    </small>
+                                    {% if conversation.unread_count > 0 %}
+                                        <span class="badge bg-primary rounded-pill">{{ conversation.unread_count }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <small class="text-muted">
+                                    <i class="fas fa-car"></i> {{ conversation.listing.year }} {{ conversation.listing.make.name }} {{ conversation.listing.model.name }}
+                                </small>
+                            </a>
+                        {% endwith %}
+                    {% empty %}
+                        <div class="list-group-item py-4 text-center">
+                            <i class="fas fa-comment-slash fa-2x text-muted mb-3"></i>
+                            <p class="mb-0">No conversations yet</p>
+                            <small class="text-muted">
+                                When you contact a seller or someone messages you about your listing, it will show up here.
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Panel -->
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-5">
+                    <i class="fas fa-envelope-open-text fa-4x text-muted mb-4"></i>
+                    <h4>Select a conversation</h4>
+                    <p class="text-muted">
+                        Choose a conversation from the list to view messages.
+                    </p>
+                    
+                    <p class="mt-3">
+                        <a href="{% url 'listing-list' %}" class="btn btn-primary">
+                            <i class="fas fa-car"></i> Browse Cars
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

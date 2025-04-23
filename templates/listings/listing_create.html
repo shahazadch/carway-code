@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sell Car - CarWay{% endblock %}
+
+{% block extra_css %}
+<!-- Vendor styles -->
+<link rel="stylesheet" href="/static/theme/vendor/choices.js/public/assets/styles/choices.min.css">
+{% endblock %}
+
+{% block content %}
+<!-- Page content -->
+<div class="container pt-3 pt-sm-4 pt-md-5 pb-5">
+    <div class="row pt-lg-2 pt-xl-3 pb-1 pb-sm-2 pb-md-3 pb-lg-4 pb-xl-5">
+        
+        <!-- Sell car form -->
+        <div class="col-lg-8 col-xl-9">
+            <h1 class="h2">Sell car</h1>
+
+            <!-- Form -->
+            <form method="POST" enctype="multipart/form-data" id="listing-form">
+                {% csrf_token %}
+
+                <!-- Photos / videos -->
+                <section class="position-relative bg-body rounded p-4 mt-4">
+                    <div class="position-relative z-1 pb-md-2 px-md-2">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-3 mb-sm-4">
+                            <h2 class="h4 mb-2 mb-sm-0 me-3">Photos</h2>
+                            <div class="position-relative d-flex">
+                                <i class="fi-info text-info mt-1 me-2"></i>
+                                <span class="fs-sm fw-medium">High-quality photos get more buyer interest</span>
+                            </div>
+                        </div>
+                        <p class="fs-sm">Upload photos of your vehicle. You can add up to 10 images. Put the main picture first.</p>
+                        
+                        {{ formset.management_form }}
+                        <div style="max-width: 852px">
+                            <div class="row row-cols-2 row-cols-sm-3 g-2 g-md-4 g-lg-3 g-xl-4" id="image-formset">
+                                {% for form in formset %}
+                                    {% if forloop.first %}
+                                    <!-- First image (cover) -->
+                                    <div class="col first-image-container">
+                                        <div class="hover-effect-opacity position-relative overflow-hidden rounded">
+                                            <span class="badge text-bg-light position-absolute top-0 start-0 z-3 mt-2 ms-2">Cover</span>
+                                            <div class="ratio" style="--fn-aspect-ratio: calc(180 / 268 * 100%)">
+                                                <div class="image-preview bg-body-tertiary d-flex align-items-center justify-content-center text
+-center">
+                                                    {{ form.image }}
+                                                    {{ form.id }}
+                                                    <div class="text-center cover-upload-text">
+                                                        <i class="fi-plus-circle fs-4 text-secondary-emphasis mb-2"></i>
+                                                        <div class="fs-sm fw-medium">Upload cover photo</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <!-- Additional images -->
+                                    <div class="col additional-image">
+                                        <div class="hover-effect-opacity position-relative overflow-hidden rounded">
+                                            <div class="ratio" style="--fn-aspect-ratio: calc(180 / 268 * 100%)">
+                                                <div class="image-preview bg-body-tertiary d-flex align-items-center justify-content-center text-center">
+                                                    {{ form.image }}
+                                                    {{ form.id }}
+                                                    <div class="text-center">
+                                                        <i class="fi-plus-circle fs-4 text-secondary-emphasis mb-2"></i>
+                                                        <div class="fs-sm fw-medium">Upload photo</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="hover-effect-target position-absolute top-0 start-0 d-flex align-items-center justify-content-center w-100 h-100 opacity-0">
+                                                <button type="button" class="btn btn-icon btn-sm btn-light position-relative z-2 remove-form" aria-label="Remove">
+                                                    <i class="fi-trash fs-base"></i>
+                                                </button>
+                                                <span class="position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25 z-1"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                <!-- Upload button -->
+                                <div class="col" id="add-more-container">
+                                    <div class="d-flex align-items-center justify-content-center position-relative h-100 cursor-pointer bg-body-tertiary border border-2 border-dotted rounded p-3">
+                                        <div class="text-center">
+                                            <i class="fi-plus-circle fs-4 text-secondary-emphasis mb-2"></i>
+                                            <div class="hover-effect-underline stretched-link fs-sm fw-medium" id="add-more">Add more photos</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Basic information -->
+                <section class="position-relative bg-body rounded p-4 mt-4">
+                    <div class="position-relative z-2 pb-md-2 px-md-2">
+                        <h2 class="h4 mb-3 mb-sm-4">Basic information</h2>
+                        
+                        <div class="row row-cols-1 row-cols-sm-2 g-3 g-md-4 mb-3 mb-md-4">
+                            <div class="col">
+                                <label class="form-label">Car brand *</label>
+                                {{ form.make }}
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Car model *</label>
+                                {{ form.model }}
+                            </div>
+                        </div>
+                        
+                        <div class="row row-cols-1 row-cols-sm-2 g-3 g-md-4 mb-3 mb-md-4">
+                            <div class="col">
+                                <label class="form-label">Manufacturing year *</label>
+                                {{ form.year }}
+                            </div>
+                            <div class="col">
+                                <label for="id_mileage" class="form-label">Mileage *</label>
+                                {{ form.mileage }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 mb-md-4">
+                            <label class="form-label">Body type *</label>
+                            <div class="d-flex flex-wrap gap-3">
+                                {{ form.body_type }}
+                            </div>
+                        </div>
+                        
+                        <div class="row row-cols-1 row-cols-sm-2 g-3 g-md-4 mb-3 mb-md-4">
+                            <div class="col">
+                                <label class="form-label">Fuel type *</label>
+                                {{ form.fuel_type }}
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Transmission *</label>
+                                {{ form.transmission }}
+                            </div>
+                        </div>
+                        
+                        <div class="row row-cols-1 row-cols-sm-2 g-3 g-md-4 mb-3 mb-md-4">
+                            <div class="col">
+                                <label class="form-label">Engine size *</label>
+                                {{ form.engine_size }}
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Color *</label>
+                                {{ form.color }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 mb-md-4">
+                            <label class="form-label">Price ($) *</label>
+                            {{ form.price }}
+                        </div>
+                        
+                        <div class="mb-3 mb-md-4">
+                            <label class="form-label">Description *</label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Action buttons -->
+                <div class="d-flex flex-column flex-sm-row bg-body rounded align-items-center justify-content-between p-4 mt-4">
+                    <a href="{% url 'listing-list' %}" class="btn btn-outline-primary mb-3 mb-sm-0">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save and publish</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Sidebar -->
+        <aside class="col-lg-4 col-xl-3 d-none d-lg-block">
+            <div class="position-sticky top-0 pt-5">
+                <div class="bg-body rounded p-4">
+                    <h3 class="h5 text-center mb-4">Listing tips</h3>
+                    <ul class="list-unstyled mb-0">
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="fi-file-clean text-primary fs-lg me-2 mt-1"></i>
+                            <span>Include all necessary details like year, mileage, and condition</span>
+                        </li>
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="fi-image text-primary fs-lg me-2 mt-1"></i>
+                            <span>Upload clear photos from different angles</span>
+                        </li>
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="fi-alert-circle text-primary fs-lg me-2 mt-1"></i>
+                            <span>Be honest about any issues with the vehicle</span>
+                        </li>
+                        <li class="d-flex align-items-start">
+                            <i class="fi-chat-left text-primary fs-lg me-2 mt-1"></i>
+                            <span>Respond quickly to buyer inquiries</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Vendor Scripts -->
+<script src="/static/theme/vendor/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="/static/theme/vendor/cleave.js/dist/cleave.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Style selects using Choices.js (from Finder theme)
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            if (select.id === 'id_make' || select.id === 'id_model') {
+                new Choices(select, {
+                    searchEnabled: true,
+                    classNames: {
+                        containerInner: 'form-select form-select-lg'
+                    },
+                    placeholder: true,
+                    placeholderValue: select.id === 'id_make' ? 'Select brand' : 'Select model'
+                });
+            } else {
+                new Choices(select, {
+                    classNames: {
+                        containerInner: 'form-select form-select-lg'
+                    }
+                });
+            }
+        });
+        
+        // Add special formatting for price and mileage with Cleave.js
+        if (document.getElementById('id_price')) {
+            new Cleave('#id_price', {
+                numeral: true,
+                numeralThousandsGroupStyle: 'thousand',
+                numeralPositiveOnly: true
+            });
+        }
+        
+        if (document.getElementById('id_mileage')) {
+            new Cleave('#id_mileage', {
+                numeral: true,
+                numeralThousandsGroupStyle: 'thousand',
+                numeralPositiveOnly: true
+            });
+        }
+        
+        // Handle dependent dropdown (make -> model)
+        const makeSelect = document.getElementById('id_make');
+        const modelSelect = document.getElementById('id_model');
+        let modelChoices;
+        
+        if (makeSelect && modelSelect) {
+            if (modelSelect.classList.contains('choices__input')) {
+                modelChoices = document.querySelector('#id_model').closest('.choices').choices;
+            }
+            
+            makeSelect.addEventListener('change', function() {
+                const makeId = this.value;
+                fetchModels(makeId);
+            });
+            
+            // Initial load if make is already selected
+            if (makeSelect.value) {
+                fetchModels(makeSelect.value);
+            }
+        }
+        
+        function fetchModels(makeId) {
+            if (!makeId) return;
+            
+            fetch(`/listings/ajax/load-models/?make=${makeId}`)
+                .then(response => response.text())
+                .then(html => {
+                    // Create a temporary element to parse the HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    const options = tempDiv.querySelectorAll('option');
+                    
+                    if (modelChoices) {
+                        // Clear existing choices
+                        modelChoices.clearStore();
+                        
+                        // Add new options
+                        const choiceOptions = Array.from(options).map(option => {
+                            return {
+                                value: option.value,
+                                label: option.textContent,
+                                selected: option.selected
+                            };
+                        });
+                        
+                        modelChoices.setChoices(choiceOptions, 'value', 'label', true);
+                    } else {
+                        // Fallback if Choices.js not initialized
+                        modelSelect.innerHTML = html;
+                    }
+                    
+                    modelSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading models:', error);
+                });
+        }
+        
+        // Image formset management
+        const imageFormset = document.getElementById('image-formset');
+        const addMoreBtn = document.getElementById('add-more');
+        const addMoreContainer = document.getElementById('add-more-container');
+        const totalFormsInput = document.querySelector('input[name="images-TOTAL_FORMS"]');
+        
+        // File input change handlers to show image previews
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.style.opacity = 0;
+            input.style.position = 'absolute';
+            input.style.top = 0;
+            input.style.left = 0;
+            input.style.width = '100%';
+            input.style.height = '100%';
+            input.style.cursor = 'pointer';
+            input.style.zIndex = 5;
+            
+            input.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const preview = this.closest('.image-preview');
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        // Clear placeholder text
+                        const textCenter = preview.querySelector('.text-center');
+                        if (textCenter) {
+                            textCenter.style.display = 'none';
+                        }
+                        
+                        // Set preview as background
+                        preview.style.backgroundImage = `url('${e.target.result}')`;
+                        preview.style.backgroundSize = 'cover';
+                        preview.style.backgroundPosition = 'center';
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+        
+        // Add more images button
+        if (addMoreBtn && imageFormset && totalFormsInput) {
+            addMoreBtn.addEventListener('click', function() {
+                const formCount = parseInt(totalFormsInput.value);
+                
+                // Maximum 10 images
+                if (formCount >= 10) {
+                    alert('You can only upload up to 10 images.');
+                    return;
+                }
+                
+                // Create a new column for the image
+                const newCol = document.createElement('div');
+                newCol.className = 'col additional-image';
+                
+                // Get the HTML structure from the second image (if it exists)
+                // Otherwise, create a new structure
+                let existingStructure;
+                const additionalImages = document.querySelectorAll('.additional-image');
+                
+                if (additionalImages.length > 0) {
+                    existingStructure = additionalImages[0].cloneNode(true);
+                    
+                    // Update the form index
+                    const formRegex = RegExp(`images-(\\d){1}-`,'g');
+                    existingStructure.innerHTML = existingStructure.innerHTML.replace(formRegex, `images-${formCount}-`);
+                    
+                    // Reset the file input
+                    const fileInput = existingStructure.querySelector('input[type="file"]');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+                    
+                    // Reset the preview
+                    const preview = existingStructure.querySelector('.image-preview');
+                    if (preview) {
+                        preview.style.backgroundImage = 'none';
+                        const textCenter = preview.querySelector('.text-center');
+                        if (textCenter) {
+                            textCenter.style.display = 'block';
+                        }
+                    }
+                    
+                    newCol.innerHTML = existingStructure.innerHTML;
+                } else {
+                    // If no additional image exists, create a new structure
+                    newCol.innerHTML = `
+                        <div class="hover-effect-opacity position-relative overflow-hidden rounded">
+                            <div class="ratio" style="--fn-aspect-ratio: calc(180 / 268 * 100%)">
+                                <div class="image-preview bg-body-tertiary d-flex align-items-center justify-content-center text-center">
+                                    <input type="file" name="images-${formCount}-image" id="id_images-${formCount}-image" style="opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; z-index: 5;">
+                                    <input type="hidden" name="images-${formCount}-id" id="id_images-${formCount}-id">
+                                    <div class="text-center">
+                                        <i class="fi-plus-circle fs-4 text-secondary-emphasis mb-2"></i>
+                                        <div class="fs-sm fw-medium">Upload photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hover-effect-target position-absolute top-0 start-0 d-flex align-items-center justify-content-center w-100 h-100 opacity-0">
+                                <button type="button" class="btn btn-icon btn-sm btn-light position-relative z-2 remove-form" aria-label="Remove">
+                                    <i class="fi-trash fs-base"></i>
+                                </button>
+                                <span class="position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25 z-1"></span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Add the new column before the "Add more" button
+                imageFormset.insertBefore(newCol, addMoreContainer);
+                
+                // Update total forms count
+                totalFormsInput.value = formCount + 1;
+                
+                // Add event listener to the new file input
+                const newFileInput = newCol.querySelector('input[type="file"]');
+                if (newFileInput) {
+                    newFileInput.addEventListener('change', function() {
+                        if (this.files && this.files[0]) {
+                            const preview = this.closest('.image-preview');
+                            const reader = new FileReader();
+                            
+                            reader.onload = function(e) {
+                                // Clear placeholder text
+                                const textCenter = preview.querySelector('.text-center');
+                                if (textCenter) {
+                                    textCenter.style.display = 'none';
+                                }
+                                
+                                // Set preview as background
+                                preview.style.backgroundImage = `url('${e.target.result}')`;
+                                preview.style.backgroundSize = 'cover';
+                                preview.style.backgroundPosition = 'center';
+                            };
+                            
+                            reader.readAsDataURL(this.files[0]);
+                        }
+                    });
+                }
+            });
+            
+            // Remove form button event delegation
+            imageFormset.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-form') || e.target.closest('.remove-form')) {
+                    const button = e.target.classList.contains('remove-form') ? e.target : e.target.closest('.remove-form');
+                    const formCount = parseInt(totalFormsInput.value);
+                    
+                    // Don't remove if there's only one additional image
+                    if (document.querySelectorAll('.additional-image').length <= 1) {
+                        return;
+                    }
+                    
+                    // Remove the form
+                    const formToRemove = button.closest('.col');
+                    if (formToRemove) {
+                        formToRemove.remove();
+                        
+                        // Update total forms
+                        totalFormsInput.value = formCount - 1;
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

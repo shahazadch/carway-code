@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Search Cars | CarWay{% endblock %}
+
+{% block content %}
+<div class="container pt-3 pt-sm-4 pb-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-2 pb-1 pt-2">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Search</li>
+    </ol>
+  </nav>
+
+  <!-- Page title -->
+  <div class="mb-4 pt-2">
+    <h1 class="h2 mb-0">Search Cars</h1>
+    <div class="d-lg-none pt-3 mb-2"></div>
+  </div>
+
+  <div class="row">
+    <!-- Search filters sidebar -->
+    <div class="col-lg-4 col-xl-3 border-end">
+      <div class="sticky-top" style="top: 105px;">
+        <div class="offcanvas-lg offcanvas-start" tabindex="-1" id="filters-sidebar">
+          <!-- Offcanvas header -->
+          <div class="offcanvas-header shadow-sm mb-2">
+            <h5 class="offcanvas-title">Filters</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#filters-sidebar"></button>
+          </div>
+
+          <!-- Offcanvas body -->
+          <div class="offcanvas-body px-0 py-lg-0">
+            <form method="GET">
+              {% csrf_token %}
+              <!-- Price range -->
+              <div class="pb-4 mb-2">
+                <h3 class="h6">Price</h3>
+                <div class="position-relative">
+                  <div class="d-flex align-items-center">
+                    <div class="w-100">
+                      <label for="min_price" class="form-label">From</label>
+                      <div class="input-group">
+                        <i class="fi-dollar position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                        {{ form.min_price }}
+                      </div>
+                    </div>
+                    <div class="mx-2">-</div>
+                    <div class="w-100">
+                      <label for="max_price" class="form-label">To</label>
+                      <div class="input-group">
+                        <i class="fi-dollar position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                        {{ form.max_price }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Car make and model -->
+              <div class="pb-4 mb-2">
+                <h3 class="h6">Make & Model</h3>
+                <div class="mb-2">
+                  <label for="id_make" class="form-label">Car Make</label>
+                  {{ form.make }}
+                </div>
+                <div class="mb-2">
+                  <label for="id_model" class="form-label">Car Model</label>
+                  {{ form.model }}
+                </div>
+              </div>
+
+              <!-- Year range -->
+              <div class="pb-4 mb-2">
+                <h3 class="h6">Year</h3>
+                <div class="d-flex align-items-center">
+                  <div class="w-100">
+                    <label for="min_year" class="form-label">From</label>
+                    {{ form.min_year }}
+                  </div>
+                  <div class="mx-2">-</div>
+                  <div class="w-100">
+                    <label for="max_year" class="form-label">To</label>
+                    {{ form.max_year }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fuel type -->
+              <div class="pb-4 mb-2">
+                <h3 class="h6">Fuel Type</h3>
+                <div class="mb-2">
+                  <label for="id_fuel_type" class="form-label">Fuel Type</label>
+                  {{ form.fuel_type }}
+                </div>
+              </div>
+
+              <!-- Transmission -->
+              <div class="pb-4 mb-2">
+                <h3 class="h6">Transmission</h3>
+                <div class="mb-2">
+                  <label for="id_transmission" class="form-label">Transmission Type</label>
+                  {{ form.transmission }}
+                </div>
+              </div>
+
+              <!-- Body type -->
+              <div class="pb-4 mb-2">
+                <h3 class="h6">Body Type</h3>
+                <div class="mb-2">
+                  <label for="id_body_type" class="form-label">Body Type</label>
+                  {{ form.body_type }}
+                </div>
+              </div>
+
+              <!-- Submit buttons -->
+              <div class="border-top border-light mt-4 pt-4">
+                <button type="submit" class="btn btn-primary w-100 mb-2">
+                  <i class="fi-search me-2"></i>
+                  Search
+                </button>
+                <button type="reset" class="btn btn-outline-secondary w-100">
+                  <i class="fi-rotate-right me-2"></i>
+                  Reset Filters
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="col-lg-8 col-xl-9 position-relative overflow-hidden pt-1">
+      
+      <!-- Breadcrumb mobile -->
+      <div class="d-block d-lg-none mb-3">
+        <button type="button" class="btn btn-secondary w-100 d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#filters-sidebar">
+          <i class="fi-filter me-2"></i>
+          Filters
+        </button>
+      </div>
+
+      <!-- Search info -->
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">
+          {% if search_performed %}
+            {% with count=listings|length %}
+              {{ count }} result{{ count|pluralize }} found
+            {% endwith %}
+          {% else %}
+            Search for cars
+          {% endif %}
+        </h2>
+      </div>
+
+      {% if listings %}
+        <!-- Grid -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+          {% for listing in listings %}
+            <!-- Car card -->
+            <div class="col pb-sm-2">
+              <article class="card card-hover position-relative h-100">
+                <div class="card-img-top position-relative">
+                  <a href="{% url 'listing-detail' listing.id %}" class="d-block stretched-link">
+                    {% if listing.get_main_image %}
+                      <img src="{{ listing.get_main_image }}" class="img-fluid" alt="{{ listing.make.name }} {{ listing.model.name }}">
+                    {% else %}
+                      <div class="bg-secondary h-100 d-flex align-items-center justify-content-center" style="min-height: 180px;">
+                        <i class="fi-car display-6 text-light"></i>
+                      </div>
+                    {% endif %}
+                  </a>
+                  <span class="badge text-bg-info position-absolute top-0 end-0 m-3">{{ listing.year }}</span>
+                </div>
+                <div class="card-body pb-3">
+                  <h3 class="h5 mb-1">
+                    <a href="{% url 'listing-detail' listing.id %}" class="stretched-link">{{ listing.make.name }} {{ listing.model.name }}</a>
+                  </h3>
+                  <div class="text-primary fw-bold mb-1">${{ listing.price|floatformat:0|intcomma }}</div>
+                  <div class="fs-sm text-muted mb-3">{{ listing.user.profile.location|default:'Location not specified' }}</div>
+                  <div class="border-top mb-3 mt-3 pt-3">
+                    <div class="row g-2">
+                      <div class="col me-sm-1">
+                        <div class="bg-body-tertiary rounded text-center w-100 h-100 p-2">
+                          <i class="fi-dashboard d-block h6 text-body mb-0"></i>
+                          <span class="fs-xs">{{ listing.mileage|intcomma }} mi</span>
+                        </div>
+                      </div>
+                      <div class="col me-sm-1">
+                        <div class="bg-body-tertiary rounded text-center w-100 h-100 p-2">
+                          <i class="fi-gearbox d-block h6 text-body mb-0"></i>
+                          <span class="fs-xs">{{ listing.transmission }}</span>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="bg-body-tertiary rounded text-center w-100 h-100 p-2">
+                          <i class="fi-petrol d-block h6 text-body mb-0"></i>
+                          <span class="fs-xs">{{ listing.fuel_type }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer border-0 pt-0">
+                  <div class="d-flex align-items-center justify-content-center mb-3">
+                    <a href="{% url 'listing-detail' listing.id %}" class="btn btn-outline-primary w-100">View details</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          {% endfor %}
+        </div>
+      {% elif search_performed %}
+        <div class="text-center py-5 my-5">
+          <i class="fi-search display-4 text-muted mb-4"></i>
+          <h3 class="h5">No results found</h3>
+          <p class="text-muted mb-4">Try adjusting your search criteria or browse all available cars.</p>
+          <a href="{% url 'listing-list' %}" class="btn btn-primary rounded-pill">
+            <i class="fi-list me-2"></i>Browse All Cars
+          </a>
+        </div>
+      {% else %}
+        <div class="text-center py-5 my-5">
+          <i class="fi-search display-4 text-muted mb-4"></i>
+          <h3 class="h5">Enter search criteria</h3>
+          <p class="text-muted mb-4">Use the filters on the left to find the perfect car for you.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Make and model connection
+    const makeSelect = document.getElementById('id_make');
+    const modelSelect = document.getElementById('id_model');
+    
+    if (makeSelect && modelSelect) {
+      makeSelect.addEventListener('change', function() {
+        const makeId = this.value;
+        
+        if (!makeId) {
+          modelSelect.innerHTML = '<option value="">Any Model</option>';
+          modelSelect.disabled = true;
+          return;
+        }
+        
+        fetch(`/listings/ajax/load-models/?make=${makeId}`)
+          .then(response => response.text())
+          .then(html => {
+            modelSelect.innerHTML = '<option value="">Any Model</option>' + html;
+            modelSelect.disabled = false;
+          });
+      });
+      
+      // Trigger the change event if a make is already selected
+      if (makeSelect.value) {
+        makeSelect.dispatchEvent(new Event('change'));
+      }
+    }
+    
+    // Price format
+    const priceInputs = document.querySelectorAll('input[name="min_price"], input[name="max_price"]');
+    if (priceInputs.length > 0) {
+      priceInputs.forEach(input => {
+        new Cleave(input, {
+          numeral: true,
+          numeralThousandsGroupStyle: 'thousand'
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

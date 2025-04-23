@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ listing.year }} {{ listing.make.name }} {{ listing.model.name }} - CarWay{% endblock %}
+
+{% block content %}
+<!-- Page container -->
+<div class="container mt-5 pt-5">
+
+  <!-- Breadcrumb -->
+  <nav class="mb-3 pt-md-3" aria-label="Breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'listing-list' %}">Cars</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ listing.year }} {{ listing.make.name }} {{ listing.model.name }}</li>
+    </ol>
+  </nav>
+
+  <!-- Title + Actions -->
+  <div class="d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4">
+    <h1 class="h2 mb-sm-0">{{ listing.year }} {{ listing.make.name }} {{ listing.model.name }}</h1>
+    <div class="d-flex align-items-center">
+      <div class="text-nowrap me-3">
+        <button type="button" class="btn btn-icon btn-sm btn-outline-secondary animate-pulse rounded-circle" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-sm" title="Add to Wishlist">
+          <i class="fi-heart animate-target fs-sm"></i>
+        </button>
+        <div class="dropdown d-inline-block" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-sm" title="Share">
+          <button type="button" class="btn btn-icon btn-sm btn-outline-secondary animate-rotate rounded-circle" id="share-btn" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fi-share animate-target fs-sm"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end mt-2">
+            <a class="dropdown-item" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" target="_blank">
+              <i class="fi-facebook fs-base opacity-75 me-2"></i>Facebook
+            </a>
+            <a class="dropdown-item" href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text=Check out this {{ listing.year }} {{ listing.make.name }} {{ listing.model.name }} on CarWay!" target="_blank">
+              <i class="fi-twitter fs-base opacity-75 me-2"></i>Twitter
+            </a>
+            <a class="dropdown-item" href="mailto:?subject=Check out this {{ listing.year }} {{ listing.make.name }} {{ listing.model.name }}&body={{ request.build_absolute_uri }}">
+              <i class="fi-mail fs-base opacity-75 me-2"></i>Email
+            </a>
+          </div>
+        </div>
+      </div>
+      {% if user == listing.user %}
+        <div class="d-flex gap-2">
+          <a href="{% url 'listing-update' listing.id %}" class="btn btn-outline-primary btn-sm rounded-pill">
+            <i class="fi-edit me-1"></i>Edit
+          </a>
+          <a href="{% url 'listing-delete' listing.id %}" class="btn btn-outline-danger btn-sm rounded-pill">
+            <i class="fi-trash me-1"></i>Delete
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Gallery + details-->
+  <div class="row">
+
+    <!-- Gallery-->
+    <div class="col-md-7">
+      <div class="position-relative mb-4">
+        <!-- Main slider -->
+        <div class="swiper gallery-top-swiper" id="mainSlider">
+          <div class="swiper-wrapper">
+            {% if listing.images.all %}
+              {% for image in listing.images.all %}
+              <div class="swiper-slide">
+                <div class="ratio ratio-16x9 bg-body-tertiary rounded overflow-hidden">
+                  <img src="{{ image.image.url }}" alt="{{ listing.make.name }} {{ listing.model.name }} - Image {{ forloop.counter }}">
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="swiper-slide">
+                <div class="ratio ratio-16x9 bg-secondary d-flex align-items-center justify-content-center rounded">
+                  <i class="fi-car display-4 text-light"></i>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Thumbnails slider -->
+        {% if listing.images.all %}
+        <div class="swiper gallery-thumbs-swiper mt-3 mx-auto" id="thumbSlider" style="max-width: 32rem;">
+          <div class="swiper-wrapper">
+            {% for image in listing.images.all %}
+            <div class="swiper-slide">
+              <div class="ratio ratio-1x1 bg-body-tertiary rounded cursor-pointer">
+                <img src="{{ image.image.url }}" alt="Thumbnail">
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Details-->
+    <div class="col-md-5 pt-md-3">
+      <div class="card border-0 bg-body-secondary">
+        <div class="card-body">
+          <div class="d-flex align-items-end mb-3">
+            <div class="h2 mb-0 ms-0 text-primary">${{ listing.price|floatformat:0|intcomma }}</div>
+          </div>
+          <div class="row gx-3 gx-lg-4 mb-3">
+            <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+              <div class="border-start border-4 ps-3 mb-3">
+                <div class="fs-sm text-body-secondary">Year</div>
+                <div class="fs-base fw-semibold">{{ listing.year }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+              <div class="border-start border-4 ps-3 mb-3">
+                <div class="fs-sm text-body-secondary">Mileage</div>
+                <div class="fs-base fw-semibold">{{ listing.mileage|intcomma }} mi</div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+              <div class="border-start border-4 ps-3 mb-3">
+                <div class="fs-sm text-body-secondary">Fuel Type</div>
+                <div class="fs-base fw-semibold">{{ listing.fuel_type }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+              <div class="border-start border-4 ps-3 mb-3">
+                <div class="fs-sm text-body-secondary">Engine Size</div>
+                <div class="fs-base fw-semibold">{{ listing.engine_size }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+              <div class="border-start border-4 ps-3 mb-3">
+                <div class="fs-sm text-body-secondary">Transmission</div>
+                <div class="fs-base fw-semibold">{{ listing.transmission }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+              <div class="border-start border-4 ps-3 mb-3">
+                <div class="fs-sm text-body-secondary">Color</div>
+                <div class="fs-base fw-semibold">{{ listing.color }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex fs-sm mb-4">
+            <div class="me-3">
+              <i class="fi-calendar-alt me-1 fs-lg opacity-70"></i>
+              <span>Listed {{ listing.created_at|date:"M j, Y" }}</span>
+            </div>
+            <div>
+              <i class="fi-user me-1 fs-lg opacity-70"></i>
+              <span>By <a class="fw-semibold text-decoration-none" href="{% url 'user-listings' listing.user.username %}">{{ listing.user.username }}</a></span>
+            </div>
+          </div>
+          {% if user.is_authenticated and user != listing.user %}
+            <a href="{% url 'new-conversation' listing.id %}" class="btn btn-primary btn-lg w-100 mb-3 rounded-pill">
+              <i class="fi-chat-left me-2"></i>Contact Seller
+            </a>
+          {% elif not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100 mb-3 rounded-pill">
+              <i class="fi-user me-2"></i>Log in to Contact Seller
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs-->
+  <ul class="nav nav-tabs nav-tabs-light fs-sm border-bottom border-light-subtle pt-2 mb-4" role="tablist">
+    <li class="nav-item me-2"><a class="nav-link active" href="#description" data-bs-toggle="tab" role="tab">Description</a></li>
+    <li class="nav-item me-2"><a class="nav-link" href="#specs" data-bs-toggle="tab" role="tab">Specifications</a></li>
+  </ul>
+
+  <!-- Tabs content-->
+  <div class="tab-content pt-2">
+    <div class="tab-pane fade show active" id="description" role="tabpanel">
+      <div class="row">
+        <div class="col-md-8">
+          <h2 class="h4">Description</h2>
+          <p class="mb-4" style="white-space: pre-line;">{{ listing.description }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="specs" role="tabpanel">
+      <div class="row">
+        <div class="col-md-8">
+          <h2 class="h4">Vehicle specifications</h2>
+          <div class="table-responsive">
+            <table class="table fs-sm">
+              <tbody>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Make:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.make.name }}</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Model:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.model.name }}</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Year:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.year }}</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Mileage:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.mileage|intcomma }} mi</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Body type:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.body_type }}</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Engine:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.engine_size }}</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Fuel type:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.fuel_type }}</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Transmission:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.transmission }}</td>
+                </tr>
+                <tr>
+                  <td class="border-0 text-body-secondary py-2 ps-0">Color:</td>
+                  <td class="border-0 py-2 pe-0">{{ listing.color }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Similar cars (carousel)-->
+  {% if similar_listings %}
+  <h2 class="h4 pt-5 pb-4 mt-2">Similar Cars</h2>
+  <div class="tns-carousel-wrapper">
+    <div class="tns-carousel-inner" data-carousel-options="{&quot;items&quot;: 3, &quot;controls&quot;: false, &quot;responsive&quot;: {&quot;0&quot;:{&quot;items&quot;:1, &quot;gutter&quot;: 16},&quot;500&quot;:{&quot;items&quot;:2, &quot;gutter&quot;: 18},&quot;768&quot;:{&quot;items&quot;:3, &quot;gutter&quot;: 20}, &quot;992&quot;:{&quot;items&quot;:3, &quot;gutter&quot;: 24}}}">
+      
+      {% for similar in similar_listings %}
+      <!-- Item-->
+      <div>
+        <div class="card shadow-sm card-hover border-0 h-100">
+          <div class="card-img-top card-img-hover">
+            <a href="{% url 'listing-detail' similar.id %}">
+              {% if similar.get_main_image %}
+                <img src="{{ similar.get_main_image }}" alt="{{ similar.make.name }} {{ similar.model.name }}">
+              {% else %}
+                <div class="bg-secondary h-100 d-flex align-items-center justify-content-center" style="min-height: 200px;">
+                  <i class="fi-car display-6 text-light"></i>
+                </div>
+              {% endif %}
+              <span class="card-img-gradient"></span>
+            </a>
+            <div class="position-absolute top-0 pt-3 ps-3">
+              <span class="d-table badge bg-info">{{ similar.year }}</span>
+            </div>
+          </div>
+          <div class="card-body pb-3">
+            <h3 class="h6 mb-2">
+              <a class="nav-link stretched-link" href="{% url 'listing-detail' similar.id %}">{{ similar.make.name }} {{ similar.model.name }}</a>
+            </h3>
+            <div class="text-primary fw-bold mb-1">${{ similar.price|floatformat:0|intcomma }}</div>
+          </div>
+          <div class="card-footer border-0 pt-0">
+            <div class="border-top border-light-subtle pt-3">
+              <div class="row g-2">
+                <div class="col me-sm-1">
+                  <div class="bg-body-tertiary rounded text-center w-100 h-100 p-2">
+                    <i class="fi-dashboard d-block h6 text-body mb-0"></i>
+                    <span class="fs-xs">{{ similar.mileage|intcomma }} mi</span>
+                  </div>
+                </div>
+                <div class="col me-sm-1">
+                  <div class="bg-body-tertiary rounded text-center w-100 h-100 p-2">
+                    <i class="fi-gearbox d-block h6 text-body mb-0"></i>
+                    <span class="fs-xs">{{ similar.transmission }}</span>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="bg-body-tertiary rounded text-center w-100 h-100 p-2">
+                    <i class="fi-petrol d-block h6 text-body mb-0"></i>
+                    <span class="fs-xs">{{ similar.fuel_type }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+    
+    // Simple image gallery - fallback to basic version
+    const thumbnails = document.querySelectorAll('.swiper-slide img');
+    const mainImage = document.querySelector('#mainSlider .swiper-slide:first-child img');
+    
+    if (thumbnails.length > 1 && mainImage) {
+      thumbnails.forEach(thumbnail => {
+        thumbnail.style.cursor = 'pointer';
+        thumbnail.addEventListener('click', function() {
+          mainImage.src = this.src;
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

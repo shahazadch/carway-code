@@ -1,0 +1,584 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light" data-pwa="true">
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+
+    <!-- SEO Meta Tags -->
+    <title>CarWay - Buy and Sell Cars Online</title>
+    <meta name="description" content="CarWay - The ultimate online platform for buying and selling cars. Find your dream car or sell your vehicle quickly and easily.">
+    <meta name="keywords" content="cars, automotive, buy cars, sell cars, used cars, new cars, car marketplace">
+    <meta name="author" content="CarWay">
+
+    <!-- CSRF Token for AJAX requests -->
+    {% csrf_token %}
+
+    <!-- Webmanifest + Favicon / App icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="icon" type="image/png" href="{% static 'theme/img/favicon.png' %}" sizes="32x32">
+
+    <!-- Theme switcher (color modes) -->
+    <script src="{% static 'theme/js/theme-switcher.js' %}"></script>
+
+    <!-- Preloaded local web font (Inter) -->
+    <link rel="preload" href="{% static 'theme/fonts/inter-variable-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+
+    <!-- Font icons -->
+    <link rel="preload" href="{% static 'theme/icons/finder-icons.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{% static 'theme/icons/finder-icons.min.css' %}">
+
+    <!-- Vendor styles -->
+    <link rel="stylesheet" href="{% static 'theme/vendor/swiper/swiper-bundle.min.css' %}">
+    <link rel="stylesheet" href="{% static 'theme/vendor/choices.js/public/assets/styles/choices.min.css' %}">
+    <link rel="stylesheet" href="{% static 'theme/vendor/simplebar/dist/simplebar.min.css' %}">
+    <link rel="stylesheet" href="{% static 'theme/vendor/nouislider/dist/nouislider.min.css' %}">
+
+    <!-- Bootstrap + Theme styles -->
+    <link rel="stylesheet" href="{% static 'theme/css/theme.min.css' %}" id="theme-styles">
+  </head>
+
+
+  <!-- Body -->
+  <body>
+
+    <!-- Navigation bar (Page header) -->
+    <header class="navbar navbar-expand-lg bg-body navbar-sticky sticky-top z-fixed px-0" data-sticky-element>
+      <div class="container">
+
+        <!-- Mobile offcanvas menu toggler (Hamburger) -->
+        <button type="button" class="navbar-toggler me-3 me-lg-0" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar brand (Logo) -->
+        <a class="navbar-brand py-1 py-md-2 py-xl-1 me-2 me-sm-n4 me-md-n5 me-lg-0" href="{% url 'home' %}">
+          <span class="d-none d-sm-flex flex-shrink-0 text-primary rtl-flip me-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="34"><path d="M34.5 16.894v10.731c0 3.506-2.869 6.375-6.375 6.375H17.5h-.85C7.725 33.575.5 26.138.5 17c0-9.35 7.65-17 17-17s17 7.544 17 16.894z" fill="currentColor"/><g fill-rule="evenodd"><path d="M17.5 13.258c-3.101 0-5.655 2.554-5.655 5.655s2.554 5.655 5.655 5.655 5.655-2.554 5.655-5.655-2.554-5.655-5.655-5.655zm-9.433 5.655c0-5.187 4.246-9.433 9.433-9.433s9.433 4.246 9.433 9.433a9.36 9.36 0 0 1-1.569 5.192l2.397 2.397a1.89 1.89 0 0 1 0 2.671 1.89 1.89 0 0 1-2.671 0l-2.397-2.397a9.36 9.36 0 0 1-5.192 1.569c-5.187 0-9.433-4.246-9.433-9.433z" fill="#000" fill-opacity=".05"/><g fill="#fff"><path d="M17.394 10.153c-3.723 0-6.741 3.018-6.741 6.741s3.018 6.741 6.741 6.741 6.741-3.018 6.741-6.741-3.018-6.741-6.741-6.741zM7.347 16.894A10.05 10.05 0 0 1 17.394 6.847 10.05 10.05 0 0 1 27.44 16.894 10.05 10.05 0 0 1 17.394 26.94 10.05 10.05 0 0 1 7.347 16.894z"/><path d="M23.025 22.525c.645-.645 1.692-.645 2.337 0l3.188 3.188c.645.645.645 1.692 0 2.337s-1.692.645-2.337 0l-3.187-3.187c-.645-.646-.645-1.692 0-2.337z"/></g></g><path d="M23.662 14.663c2.112 0 3.825-1.713 3.825-3.825s-1.713-3.825-3.825-3.825-3.825 1.713-3.825 3.825 1.713 3.825 3.825 3.825z" fill="#fff"/><path fill-rule="evenodd" d="M23.663 8.429a2.41 2.41 0 0 0-2.408 2.408 2.41 2.41 0 0 0 2.408 2.408 2.41 2.41 0 0 0 2.408-2.408 2.41 2.41 0 0 0-2.408-2.408zm-5.242 2.408c0-2.895 2.347-5.242 5.242-5.242s5.242 2.347 5.242 5.242-2.347 5.242-5.242 5.242-5.242-2.347-5.242-5.242z" fill="currentColor"/></svg>
+          </span>
+          CarWay
+        </a>
+
+        <!-- Main navigation -->
+        <nav class="offcanvas offcanvas-start" id="navbarNav" tabindex="-1" aria-labelledby="navbarNavLabel">
+          <div class="offcanvas-header py-3">
+            <h5 class="offcanvas-title" id="navbarNavLabel">Browse CarWay</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body pt-2 pb-4 py-lg-0 mx-lg-auto">
+            <ul class="navbar-nav position-relative">
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'listing-list' %}">Browse Cars</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'search-listings' %}">Search</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'market_estimator' %}">Value Estimator</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Right aligned nav elements -->
+        <div class="d-sm-flex align-items-center ms-auto">
+          {% if user.is_authenticated %}
+            <div class="d-flex align-items-center me-3">
+              <a href="{% url 'inbox' %}" class="nav-link text-nowrap position-relative me-3 {% if '/messages/inbox/' in request.path %}active{% endif %}">
+                <i class="fi-chat-circle fs-xxl"></i>
+                {% with unread_count=user.profile.unread_message_count %}
+                  {% if unread_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                    {{ unread_count }}
+                  </span>
+                  {% endif %}
+                {% endwith %}
+              </a>
+            </div>
+            
+            <div class="dropdown d-inline-block">
+              <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fi-user me-2"></i>
+                <span>{{ user.username }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'user-listings' user.username %}">My Listings</a></li>
+                <li><a class="dropdown-item" href="{% url 'listing-create' %}">Create Listing</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-sm rounded-pill order-lg-3 me-2">
+              <i class="fi-user me-2"></i>Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm rounded-pill order-lg-3">
+              Register
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero slider -->
+    <section class="overflow-hidden py-xxl-5 py-5">
+      <div class="container position-relative pt-1 mt-2 mt-sm-3 mt-md-4 mt-lg-5">
+        <!-- Slider main container -->
+        <div class="swiper" data-swiper='{"noSwiper":true,"spaceBetween":16,"autoplay":true,"loop":true,"navigation":{"prevEl":".btn-prev","nextEl":".btn-next"}}'>
+          <div class="swiper-wrapper">
+          
+            <!-- Slide 1 -->
+            <div class="swiper-slide h-auto">
+              <div class="d-flex flex-column flex-md-row align-items-center">
+                <div class="w-md-50 ms-md-n5 me-md-5 text-center text-md-start position-relative zindex-1 order-1 order-md-0">
+                  <div class="slide-content mx-auto me-md-0" style="max-width: 415px;">
+                    <h2 class="display-4 mb-md-4 mb-3">Buy and Sell Cars with Ease</h2>
+                    <p class="mb-4 mb-lg-5 fs-lg">Find your dream car or sell your vehicle in our growing car marketplace.</p>
+                    <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start">
+                      <a href="{% url 'listing-list' %}" class="btn btn-primary rounded-pill mb-sm-0 mb-3 me-sm-4">Browse Cars</a>
+                      <a href="{% url 'listing-create' %}" class="btn btn-outline-primary rounded-pill">Sell Your Car</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="position-relative w-md-50 order-0 order-md-1">
+                  <div class="bg-size-cover bg-position-center bg-repeat-0 h-100 w-100 zindex-2 position-absolute top-0 start-0" style="background-image: url({% static 'theme/img/home/cars/hero/layer01.png' %});"></div>
+                  <div class="bg-size-cover bg-position-center bg-repeat-0 h-100 w-100 zindex-3 position-absolute" style="top: -10px; left: -80px; background-image: url({% static 'theme/img/home/cars/hero/layer02.png' %});"></div>
+                  <div class="position-relative zindex-1">
+                    <img class="d-block" src="{% static 'theme/img/home/cars/hero/layer03.png' %}" alt="Car">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Slider prev/next buttons -->
+          <div class="btn-prev text-primary d-none d-md-flex">
+            <i class="fi-chevron-left fs-xl"></i>
+          </div>
+          <div class="btn-next text-primary d-none d-md-flex">
+            <i class="fi-chevron-right fs-xl"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search -->
+    <section class="position-relative bg-white rounded-lg shadow-sm py-4 mx-3 mx-md-4">
+      <div class="container py-2">
+        <h2 class="h4 mb-4">Find Your Next Car</h2>
+        <form action="{% url 'search-listings' %}" method="GET" class="form-group">
+          <div class="row g-3 g-sm-4">
+            <!-- Car brand (Make) -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label" for="brand">Car brand</label>
+              <select class="form-select" id="brand" name="make" data-select='{"searchEnabled": true}'>
+                <option value="">Any brand</option>
+                {% for make in car_makes %}
+                  <option value="{{ make.id }}">{{ make.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Car model -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label" for="model">Car model</label>
+              <select class="form-select" id="model" name="model" data-select='{"searchEnabled": true}' disabled>
+                <option value="">Any model</option>
+              </select>
+            </div>
+
+            <!-- Year range -->
+            <div class="col-md-2 col-sm-6">
+              <label class="form-label">Year</label>
+              <div class="d-flex align-items-center">
+                <select class="form-select" name="min_year">
+                  <option value="">From</option>
+                  {% for year in year_range %}
+                    <option value="{{ year }}">{{ year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Price range -->
+            <div class="col-md-2 col-sm-6">
+              <label class="form-label">Price</label>
+              <div class="input-group">
+                <span class="input-group-text fs-xl">$</span>
+                <input type="text" class="form-control" name="max_price" placeholder="Max price">
+              </div>
+            </div>
+
+            <!-- Button -->
+            <div class="col-md-2 col-sm-6">
+              <label class="form-label d-sm-block d-none">&nbsp;</label>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fi-search me-2"></i>
+                <span class="align-middle">Search</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Page content -->
+    <main class="content-wrapper">
+      <section class="container pt-5 mt-5 pb-5">
+
+        <!-- Body type selection -->
+        <section class="pb-lg-5 mb-5">
+          <div class="d-flex align-items-center justify-content-between mb-3 mb-md-4">
+            <h2 class="h3 mb-0">Browse by body type</h2>
+            <a href="{% url 'listing-list' %}" class="btn btn-link fw-normal ms-md-3 p-0">
+              View all
+              <i class="fi-arrow-long-right ms-2"></i>
+            </a>
+          </div>
+          
+          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-2 g-md-4">
+            <!-- Sedan -->
+            <div class="col">
+              <div class="card card-body card-hover h-100 mx-1 border-0">
+                <div class="d-flex justify-content-center mb-1">
+                  <img src="{% static 'theme/img/home/cars/body-type/sedan.svg' %}" width="80" alt="Sedan">
+                </div>
+                <form action="{% url 'search-listings' %}" method="GET">
+                  <input type="hidden" name="body_type" value="Sedan">
+                  <button type="submit" class="text-center btn btn-link stretched-link p-0 fw-normal">Sedan</button>
+                </form>
+              </div>
+            </div>
+            
+            <!-- SUV -->
+            <div class="col">
+              <div class="card card-body card-hover h-100 mx-1 border-0">
+                <div class="d-flex justify-content-center mb-1">
+                  <img src="{% static 'theme/img/home/cars/body-type/suv.svg' %}" width="80" alt="SUV">
+                </div>
+                <form action="{% url 'search-listings' %}" method="GET">
+                  <input type="hidden" name="body_type" value="SUV">
+                  <button type="submit" class="text-center btn btn-link stretched-link p-0 fw-normal">SUV</button>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Coupe -->
+            <div class="col">
+              <div class="card card-body card-hover h-100 mx-1 border-0">
+                <div class="d-flex justify-content-center mb-1">
+                  <img src="{% static 'theme/img/home/cars/body-type/coupe.svg' %}" width="80" alt="Coupe">
+                </div>
+                <form action="{% url 'search-listings' %}" method="GET">
+                  <input type="hidden" name="body_type" value="Coupe">
+                  <button type="submit" class="text-center btn btn-link stretched-link p-0 fw-normal">Coupe</button>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Convertible -->
+            <div class="col">
+              <div class="card card-body card-hover h-100 mx-1 border-0">
+                <div class="d-flex justify-content-center mb-1">
+                  <img src="{% static 'theme/img/home/cars/body-type/convertible.svg' %}" width="80" alt="Convertible">
+                </div>
+                <form action="{% url 'search-listings' %}" method="GET">
+                  <input type="hidden" name="body_type" value="Convertible">
+                  <button type="submit" class="text-center btn btn-link stretched-link p-0 fw-normal">Convertible</button>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Wagon -->
+            <div class="col">
+              <div class="card card-body card-hover h-100 mx-1 border-0">
+                <div class="d-flex justify-content-center mb-1">
+                  <img src="{% static 'theme/img/home/cars/body-type/wagon.svg' %}" width="80" alt="Wagon">
+                </div>
+                <form action="{% url 'search-listings' %}" method="GET">
+                  <input type="hidden" name="body_type" value="Wagon">
+                  <button type="submit" class="text-center btn btn-link stretched-link p-0 fw-normal">Wagon</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      
+        <!-- Featured listings -->
+        {% if featured_listings %}
+        <section class="pb-lg-5 mb-5">
+          <div class="d-flex align-items-center justify-content-between mb-3 mb-md-4">
+            <h2 class="h3 mb-0">Featured cars</h2>
+            <a href="{% url 'listing-list' %}" class="btn btn-link fw-normal ms-md-3 p-0">
+              View all
+              <i class="fi-arrow-long-right ms-2"></i>
+            </a>
+          </div>
+
+          <!-- Swiper slider -->
+          <div class="swiper swiper-initialized swiper-horizontal" data-swiper='{"spaceBetween": 24, "loop": true, "pagination": {"el": ".swiper-pagination", "clickable": true}, "navigation": {"prevEl": ".swiper-button-prev", "nextEl": ".swiper-button-next"}, "breakpoints": {"576": {"slidesPerView": 1}, "768": {"slidesPerView": 2}, "992": {"slidesPerView": 3}}}'>
+            <div class="swiper-wrapper">
+              {% for listing in featured_listings %}
+                <!-- Item -->
+                <div class="swiper-slide h-auto">
+                  <div class="card card-light card-hover h-100">
+                    <div class="card-img-top card-img-hover">
+                      <a href="{% url 'listing-detail' listing.id %}" class="img-overlay"></a>
+                      {% if listing.get_main_image %}
+                        <img src="{{ listing.get_main_image }}" alt="{{ listing.make.name }} {{ listing.model.name }}">
+                      {% else %}
+                        <div class="bg-secondary h-100 d-flex align-items-center justify-content-center" style="min-height: 180px;">
+                          <i class="fi-car display-6 text-light"></i>
+                        </div>
+                      {% endif %}
+                      <div class="position-absolute start-0 top-0 pt-3 ps-3">
+                        <span class="d-table badge bg-info">{{ listing.year }}</span>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="d-flex align-items-center justify-content-between pb-1">
+                        <span class="fs-sm text-muted">{{ listing.make.name }}</span>
+                      </div>
+                      <h3 class="h6 mb-1">
+                        <a class="nav-link" href="{% url 'listing-detail' listing.id %}">{{ listing.make.name }} {{ listing.model.name }}</a>
+                      </h3>
+                      <div class="text-primary fw-bold mb-1">${{ listing.price|floatformat:0|intcomma }}</div>
+                      <div class="fs-sm text-muted">{{ listing.mileage|intcomma }} miles</div>
+                    </div>
+                    <div class="card-footer border-0 pt-0">
+                      <div class="border-top border-light pt-3">
+                        <div class="row g-2">
+                          <div class="col me-sm-1">
+                            <div class="bg-dark bg-opacity-10 rounded text-center w-100 h-100 p-2">
+                              <i class="fi-dashboard d-block h6 text-body mb-0"></i>
+                              <span class="fs-xs">{{ listing.mileage|intcomma }}</span>
+                            </div>
+                          </div>
+                          <div class="col me-sm-1">
+                            <div class="bg-dark bg-opacity-10 rounded text-center w-100 h-100 p-2">
+                              <i class="fi-gearbox d-block h6 text-body mb-0"></i>
+                              <span class="fs-xs">{{ listing.transmission }}</span>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="bg-dark bg-opacity-10 rounded text-center w-100 h-100 p-2">
+                              <i class="fi-petrol d-block h6 text-body mb-0"></i>
+                              <span class="fs-xs">{{ listing.fuel_type }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- Pagination (bullets) -->
+            <div class="swiper-pagination position-relative pt-4 mt-4"></div>
+          </div>
+        </section>
+        {% endif %}
+        
+        <!-- Sell your car CTA-->
+        <section class="pb-lg-5 mb-5">
+          <div class="bg-accent rounded-3">
+            <div class="row align-items-center">
+              <div class="col-md-5">
+                <img src="{% static 'theme/img/home/cars/sell-car.png' %}" alt="Sell your car">
+              </div>
+              <div class="col-md-7 py-xl-5 py-md-4 py-3 px-4 text-light">
+                <h2 class="h3 text-light mb-lg-4 mb-3">Sell your car quickly and easily!</h2>
+                <p class="mb-lg-4 mb-3 fs-sm">
+                  Join thousands of satisfied customers who have sold their cars on our platform. 
+                  Create a listing in minutes and connect with potential buyers directly.
+                </p>
+                <a href="{% url 'listing-create' %}" class="btn btn-light rounded-pill">
+                  <i class="fi-plus me-2"></i>
+                  Sell car
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- How it works section -->
+        <section class="pb-5 mb-md-4">
+          <h2 class="h3 mb-4">How it Works</h2>
+          <div class="row g-4">
+            <!-- Step 1 -->
+            <div class="col-md-4">
+              <div class="card card-hover border-0 h-100 pb-2 pb-sm-3">
+                <div class="card-body">
+                  <div class="d-table bg-faded-primary rounded-circle position-absolute text-primary fs-lg fw-semibold mt-n3 ms-n3 mb-0 py-2 px-3">01</div>
+                  <h3 class="h5 pt-3 mt-3">Create your listing</h3>
+                  <p class="mb-0 fs-sm">
+                    Register an account and list your car in just a few minutes. Add photos, details, and your asking price.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="col-md-4">
+              <div class="card card-hover border-0 h-100 pb-2 pb-sm-3">
+                <div class="card-body">
+                  <div class="d-table bg-faded-primary rounded-circle position-absolute text-primary fs-lg fw-semibold mt-n3 ms-n3 mb-0 py-2 px-3">02</div>
+                  <h3 class="h5 pt-3 mt-3">Connect with buyers</h3>
+                  <p class="mb-0 fs-sm">
+                    Interested buyers will contact you through our messaging system. Arrange viewings and answer questions.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="col-md-4">
+              <div class="card card-hover border-0 h-100 pb-2 pb-sm-3">
+                <div class="card-body">
+                  <div class="d-table bg-faded-primary rounded-circle position-absolute text-primary fs-lg fw-semibold mt-n3 ms-n3 mb-0 py-2 px-3">03</div>
+                  <h3 class="h5 pt-3 mt-3">Sell your car</h3>
+                  <p class="mb-0 fs-sm">
+                    Finalize the sale with your chosen buyer. Secure payment and complete the necessary paperwork.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer pt-lg-5 pt-4 bg-dark text-light">
+      <div class="container pt-3 pb-4">
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="mb-4 pb-md-3">
+              <a class="d-inline-block mb-3" href="{% url 'home' %}">
+                <span class="text-light fs-4">
+                  <i class="fi-car-alt me-2"></i>
+                  <span>CarWay</span>
+                </span>
+              </a>
+              <p class="mb-3 opacity-70">The ultimate online platform for buying and selling cars.</p>
+              <div class="d-flex">
+                <a class="btn btn-icon btn-sm btn-secondary btn-facebook rounded-circle me-2" href="#"><i class="fi-facebook"></i></a>
+                <a class="btn btn-icon btn-sm btn-secondary btn-twitter rounded-circle me-2" href="#"><i class="fi-twitter"></i></a>
+                <a class="btn btn-icon btn-sm btn-secondary btn-instagram rounded-circle" href="#"><i class="fi-instagram"></i></a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-2 col-md-3 col-6">
+            <h4 class="fs-5 text-light mb-4">Quick Links</h4>
+            <ul class="nav flex-column opacity-70">
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'home' %}">Home</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'listing-list' %}">Browse Cars</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'search-listings' %}">Search</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'market_estimator' %}">Value Estimator</a></li>
+            </ul>
+          </div>
+          
+          <div class="col-lg-2 col-md-3 col-6">
+            <h4 class="fs-5 text-light mb-4">Account</h4>
+            <ul class="nav flex-column opacity-70">
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'login' %}">Login</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'register' %}">Register</a></li>
+              {% if user.is_authenticated %}
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'profile' %}">My Profile</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'inbox' %}">Messages</a></li>
+              {% endif %}
+            </ul>
+          </div>
+          
+          <div class="col-lg-4 col-md-6">
+            <h4 class="fs-5 text-light mb-4">Contact Us</h4>
+            <ul class="list-unstyled opacity-70">
+              <li class="d-flex mb-3">
+                <i class="fi-map-pin me-2 mt-1"></i>
+                <span>123 Car Street, Auto City</span>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="fi-phone me-2 mt-1"></i>
+                <span>+1 (555) 123-4567</span>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="fi-mail me-2 mt-1"></i>
+                <span>info@carway.com</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="text-center pt-4 mt-4 border-top border-white-10">
+          <p class="mb-0 opacity-70">&copy; {% now "Y" %} CarWay. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <a class="btn-scroll-top" href="#top" data-scroll>
+      <span class="btn-scroll-top-tooltip text-muted fs-sm me-2">Top</span>
+      <i class="btn-scroll-top-icon fi-chevron-up"></i>
+    </a>
+
+    <!-- Vendor scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'theme/vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/simplebar/dist/simplebar.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/choices.js/public/assets/scripts/choices.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/cleave.js/dist/cleave.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/nouislider/dist/nouislider.min.js' %}"></script>
+    
+    <!-- Theme scripts -->
+    <script src="{% static 'theme/js/theme.min.js' %}"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Price formatter
+        if (document.querySelector('input[name="max_price"]')) {
+          new Cleave('input[name="max_price"]', {
+            numeral: true,
+            numeralThousandsGroupStyle: 'thousand'
+          });
+        }
+        
+        // Make and model dynamic loading
+        const makeSelect = document.getElementById('brand');
+        const modelSelect = document.getElementById('model');
+        
+        if (makeSelect && modelSelect) {
+          makeSelect.addEventListener('change', function() {
+            const makeId = this.value;
+            
+            if (!makeId) {
+              modelSelect.innerHTML = '<option value="">Any model</option>';
+              modelSelect.disabled = true;
+              return;
+            }
+            
+            fetch(`/listings/ajax/load-models/?make=${makeId}`)
+              .then(response => response.text())
+              .then(html => {
+                modelSelect.innerHTML = '<option value="">Any model</option>' + html;
+                modelSelect.disabled = false;
+              });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Browse Cars - CarWay{% endblock %}
+
+{% block content %}
+<!-- Page container -->
+<div class="container mt-5 pt-5">
+    <nav class="mb-3" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Browse Cars</li>
+        </ol>
+    </nav>
+
+    <!-- Page title + Controls -->
+    <div class="d-flex align-items-center justify-content-between pb-4 mb-2">
+        <h1 class="h2 mb-0">Browse Cars</h1>
+        <div class="d-flex align-items-center">
+            <a href="{% url 'search-listings' %}" class="btn btn-outline-primary rounded-pill me-3">
+                <i class="fi-filter me-2"></i>Advanced Search
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'listing-create' %}" class="btn btn-primary rounded-pill">
+                <i class="fi-plus me-2"></i>Sell Your Car
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Car grid -->
+    <div class="row">
+        {% for listing in listings %}
+        <div class="col-sm-6 col-xl-4 mb-4">
+            <div class="card shadow-sm card-hover border-0 h-100">
+                <div class="card-img-top card-img-hover">
+                    <a href="{% url 'listing-detail' listing.id %}">
+                        {% if listing.get_main_image %}
+                            <img src="{{ listing.get_main_image }}" class="img-fluid" alt="{{ listing.make.name }} {{ listing.model.name }}">
+                        {% else %}
+                            <div class="bg-secondary h-100 d-flex align-items-center justify-content-center" style="min-height: 200px;">
+                                <i class="fi-car display-6 text-light"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                    <div class="position-absolute top-0 end-0 pt-3 pe-3">
+                        <span class="d-table badge bg-info fs-sm">{{ listing.year }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <a href="#" class="fs-sm text-decoration-none"><i class="fi-user opacity-60 me-1"></i>{{ listing.user.username }}</a>
+                        <span class="fs-sm text-muted">{{ listing.created_at|timesince }} ago</span>
+                    </div>
+                    <h3 class="h6 mb-1">
+                        <a class="nav-link" href="{% url 'listing-detail' listing.id %}">{{ listing.make.name }} {{ listing.model.name }}</a>
+                    </h3>
+                    <div class="text-primary fw-bold mb-1">${{ listing.price|floatformat:0|intcomma }}</div>
+                    <div class="fs-sm border-top pt-3 mt-3">
+                        <div class="d-flex mb-3">
+                            <div class="d-flex align-items-center me-3">
+                                <i class="fi-dashboard fs-lg opacity-70 me-1"></i>
+                                <span>{{ listing.mileage|intcomma }} mi</span>
+                            </div>
+                            <div class="d-flex align-items-center me-3">
+                                <i class="fi-gearbox fs-lg opacity-70 me-1"></i>
+                                <span>{{ listing.transmission }}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fi-petrol fs-lg opacity-70 me-1"></i>
+                                <span>{{ listing.fuel_type }}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="{% url 'listing-detail' listing.id %}" class="btn btn-primary btn-sm rounded-pill w-100">
+                                <i class="fi-eye me-2"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fi-car-alt display-4 text-muted mb-4"></i>
+            <h3 class="h5">No Cars Found</h3>
+            <p class="text-muted mb-4">There are no car listings available at the moment.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'listing-create' %}" class="btn btn-primary rounded-pill">
+                    <i class="fi-plus me-2"></i>Add the First Listing
+                </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="mt-4 pt-3" aria-label="Pagination">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <i class="fi-chevrons-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <i class="fi-chevron-left"></i>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <i class="fi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <i class="fi-chevrons-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

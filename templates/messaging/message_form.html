@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Contact Seller - CarWay{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'listing-detail' listing.id %}">{{ listing.year }} {{ listing.make.name }} {{ listing.model.name }}</a></li>
+            <li class="breadcrumb-item active">Contact Seller</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-envelope"></i> Contact Seller</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-4">Sending message to <strong>{{ listing.user.username }}</strong> about:</h5>
+                    
+                    <div class="d-flex mb-4">
+                        <div class="flex-shrink-0" style="width: 120px;">
+                            {% if listing.get_main_image %}
+                                <img src="{{ listing.get_main_image }}" alt="{{ listing.make.name }}" class="img-thumbnail" style="width: 120px;">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 90px; width: 120px;">
+                                    <i class="fas fa-car fa-2x text-secondary"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="ms-3">
+                            <h5 class="mb-1">{{ listing.year }} {{ listing.make.name }} {{ listing.model.name }}</h5>
+                            <p class="mb-1 text-primary">${{ listing.price|floatformat:0|intcomma }}</p>
+                            <small class="text-muted">{{ listing.mileage|intcomma }} miles • {{ listing.fuel_type }} • {{ listing.transmission }}</small>
+                        </div>
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <fieldset>
+                            {{ form|crispy }}
+                        </fieldset>
+                        <div class="mt-4">
+                            <a href="{% url 'listing-detail' listing.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Listing
+                            </a>
+                            <button type="submit" class="btn btn-primary float-end">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Tips for Messaging</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fas fa-question-circle text-primary me-2"></i>
+                            Ask specific questions about the vehicle's condition
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-history text-primary me-2"></i>
+                            Inquire about the service history and any accidents
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i>
+                            See if you can schedule a test drive
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-dollar-sign text-primary me-2"></i>
+                            Ask if there's room for negotiation on price
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-shield-alt text-primary me-2"></i>
+                            Never share personal financial information
+                        </li>
+                    </ul>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Always try to meet in a public place and inspect the vehicle in daylight.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
