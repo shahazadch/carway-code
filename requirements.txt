@@ -1,0 +1,9 @@
+django
+django-crispy-forms
+crispy-bootstrap4
+pillow
+psycopg2-binary
+joblib
+numpy
+pandas
+scikit-learn
