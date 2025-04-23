@@ -1,0 +1,533 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light" data-pwa="true">
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+
+    <!-- SEO Meta Tags -->
+    <title>{{ listing.make.name }} {{ listing.model.name }} {{ listing.year }} | CarWay</title>
+    <meta name="description" content="{{ listing.make.name }} {{ listing.model.name }} {{ listing.year }} for sale. {{ listing.description|truncatewords:20 }}">
+    <meta name="keywords" content="cars, automotive, buy cars, sell cars, used cars, new cars, car listings">
+    <meta name="author" content="CarWay">
+
+    <!-- CSRF Token for AJAX requests -->
+    {% csrf_token %}
+
+    <!-- Webmanifest + Favicon / App icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="icon" type="image/png" href="{% static 'theme/img/favicon.png' %}" sizes="32x32">
+
+    <!-- Theme switcher (color modes) -->
+    <script src="{% static 'theme/js/theme-switcher.js' %}"></script>
+
+    <!-- Preloaded local web font (Inter) -->
+    <link rel="preload" href="{% static 'theme/fonts/inter-variable-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+
+    <!-- Font icons -->
+    <link rel="preload" href="{% static 'theme/icons/finder-icons.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{% static 'theme/icons/finder-icons.min.css' %}">
+
+    <!-- Vendor styles -->
+    <link rel="stylesheet" href="{% static 'theme/vendor/swiper/swiper-bundle.min.css' %}">
+
+    <!-- Bootstrap + Theme styles -->
+    <link rel="stylesheet" href="{% static 'theme/css/theme.min.css' %}" id="theme-styles">
+  </head>
+
+
+  <!-- Body -->
+  <body>
+
+    <!-- Navigation bar (Page header) -->
+    <header class="navbar navbar-expand-lg bg-body navbar-sticky sticky-top z-fixed px-0" data-sticky-element>
+      <div class="container">
+
+        <!-- Mobile offcanvas menu toggler (Hamburger) -->
+        <button type="button" class="navbar-toggler me-3 me-lg-0" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar brand (Logo) -->
+        <a class="navbar-brand py-1 py-md-2 py-xl-1 me-2 me-sm-n4 me-md-n5 me-lg-0" href="{% url 'home' %}">
+          <span class="d-none d-sm-flex flex-shrink-0 text-primary rtl-flip me-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="34"><path d="M34.5 16.894v10.731c0 3.506-2.869 6.375-6.375 6.375H17.5h-.85C7.725 33.575.5 26.138.5 17c0-9.35 7.65-17 17-17s17 7.544 17 16.894z" fill="currentColor"/><g fill-rule="evenodd"><path d="M17.5 13.258c-3.101 0-5.655 2.554-5.655 5.655s2.554 5.655 5.655 5.655 5.655-2.554 5.655-5.655-2.554-5.655-5.655-5.655zm-9.433 5.655c0-5.187 4.246-9.433 9.433-9.433s9.433 4.246 9.433 9.433a9.36 9.36 0 0 1-1.569 5.192l2.397 2.397a1.89 1.89 0 0 1 0 2.671 1.89 1.89 0 0 1-2.671 0l-2.397-2.397a9.36 9.36 0 0 1-5.192 1.569c-5.187 0-9.433-4.246-9.433-9.433z" fill="#000" fill-opacity=".05"/><g fill="#fff"><path d="M17.394 10.153c-3.723 0-6.741 3.018-6.741 6.741s3.018 6.741 6.741 6.741 6.741-3.018 6.741-6.741-3.018-6.741-6.741-6.741zM7.347 16.894A10.05 10.05 0 0 1 17.394 6.847 10.05 10.05 0 0 1 27.44 16.894 10.05 10.05 0 0 1 17.394 26.94 10.05 10.05 0 0 1 7.347 16.894z"/><path d="M23.025 22.525c.645-.645 1.692-.645 2.337 0l3.188 3.188c.645.645.645 1.692 0 2.337s-1.692.645-2.337 0l-3.187-3.187c-.645-.646-.645-1.692 0-2.337z"/></g></g><path d="M23.662 14.663c2.112 0 3.825-1.713 3.825-3.825s-1.713-3.825-3.825-3.825-3.825 1.713-3.825 3.825 1.713 3.825 3.825 3.825z" fill="#fff"/><path fill-rule="evenodd" d="M23.663 8.429a2.41 2.41 0 0 0-2.408 2.408 2.41 2.41 0 0 0 2.408 2.408 2.41 2.41 0 0 0 2.408-2.408 2.41 2.41 0 0 0-2.408-2.408zm-5.242 2.408c0-2.895 2.347-5.242 5.242-5.242s5.242 2.347 5.242 5.242-2.347 5.242-5.242 5.242-5.242-2.347-5.242-5.242z" fill="currentColor"/></svg>
+          </span>
+          CarWay
+        </a>
+
+        <!-- Main navigation -->
+        <nav class="offcanvas offcanvas-start" id="navbarNav" tabindex="-1" aria-labelledby="navbarNavLabel">
+          <div class="offcanvas-header py-3">
+            <h5 class="offcanvas-title" id="navbarNavLabel">Browse CarWay</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body pt-2 pb-4 py-lg-0 mx-lg-auto">
+            <ul class="navbar-nav position-relative">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'listing-list' %}">Browse Cars</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'search-listings' %}">Search</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'market_estimator' %}">Value Estimator</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Right aligned nav elements -->
+        <div class="d-sm-flex align-items-center ms-auto">
+          {% if user.is_authenticated %}
+            <div class="d-flex align-items-center me-3">
+              <a href="{% url 'inbox' %}" class="nav-link text-nowrap position-relative me-3 {% if '/messages/inbox/' in request.path %}active{% endif %}">
+                <i class="fi-chat-circle fs-xxl"></i>
+                {% with unread_count=user.profile.unread_message_count %}
+                  {% if unread_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                    {{ unread_count }}
+                  </span>
+                  {% endif %}
+                {% endwith %}
+              </a>
+            </div>
+            
+            <div class="dropdown d-inline-block">
+              <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fi-user me-2"></i>
+                <span>{{ user.username }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'user-listings' user.username %}">My Listings</a></li>
+                <li><a class="dropdown-item" href="{% url 'listing-create' %}">Create Listing</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-sm rounded-pill order-lg-3 me-2">
+              <i class="fi-user me-2"></i>Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm rounded-pill order-lg-3">
+              Register
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="content-wrapper">
+      <!-- Car details page content -->
+      <section class="container pt-3 pt-sm-4 pb-5">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-2 pb-1 pt-2">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'listing-list' %}">Cars</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ listing.make.name }} {{ listing.model.name }}</li>
+          </ol>
+        </nav>
+
+        <!-- Title + Price + Share -->
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline mb-4 pb-sm-1">
+          <div class="me-3">
+            <h1 class="h2 mb-0">{{ listing.make.name }} {{ listing.model.name }} {{ listing.year }}</h1>
+            <span class="text-muted fs-sm d-inline-block mt-2 pb-1 mb-2">Listed {{ listing.created_at|timesince }} ago by {{ listing.user.username }}</span>
+          </div>
+          <div class="text-nowrap pb-3">
+            <span class="badge bg-info fs-sm me-2">{{ listing.year }}</span>
+            <div class="fs-4 text-primary fw-semibold mb-2">${{ listing.price|floatformat:0|intcomma }}</div>
+            <div class="d-flex align-items-center mb-2">
+              <button type="button" class="btn btn-icon btn-secondary btn-sm rounded-circle" data-bs-toggle="tooltip" title="Share">
+                <i class="fi-share"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery + Details -->
+        <div class="row">
+
+          <!-- Gallery sidebar -->
+          <div class="col-md-5 col-lg-4 mb-5 mb-md-0">
+            <div class="pe-md-3">
+              
+              <!-- Swiper slider -->
+              <div class="swiper mb-4" data-swiper='{"loop": true, "pagination": {"el": ".swiper-pagination","type": "progressbar"}, "navigation": {"prevEl": ".btn-prev","nextEl": ".btn-next"}}'>
+                <div class="swiper-wrapper">
+                  {% for image in listing.images.all %}
+                    <div class="swiper-slide position-relative">
+                      <a href="{{ image.image.url }}" class="d-block ratio ratio-4x3" data-gallery="carousel">
+                        <img src="{{ image.image.url }}" class="img-fluid rounded-3" alt="{{ listing.make.name }} {{ listing.model.name }}">
+                      </a>
+                    </div>
+                  {% empty %}
+                    <div class="swiper-slide">
+                      <div class="ratio ratio-4x3 bg-secondary rounded-3 d-flex align-items-center justify-content-center">
+                        <i class="fi-car-alt display-5 text-light"></i>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+                <!-- Pagination (progressbar) -->
+                <div class="swiper-pagination"></div>
+
+                <!-- Navigation -->
+                <button type="button" class="btn-prev btn btn-icon btn-sm btn-light rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 zindex-2">
+                  <i class="fi-chevron-left"></i>
+                </button>
+                <button type="button" class="btn-next btn btn-icon btn-sm btn-light rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 zindex-2">
+                  <i class="fi-chevron-right"></i>
+                </button>
+              </div>
+
+              <!-- Thumbnails nav -->
+              <div class="row g-3 mb-5">
+                {% for image in listing.images.all|slice:":4" %}
+                  <div class="col-3">
+                    <a href="{{ image.image.url }}" class="ratio ratio-1x1" data-gallery="carousel">
+                      <img src="{{ image.image.url }}" class="rounded-2" alt="{{ listing.make.name }} {{ listing.model.name }}">
+                    </a>
+                  </div>
+                {% endfor %}
+              </div>
+
+              <!-- Key features -->
+              <h2 class="h4 mb-4">Key features</h2>
+              <ul class="list-unstyled row row-cols-1 row-cols-md-1 row-cols-lg-1 gy-2 mb-5">
+                <li class="col d-flex align-items-center">
+                  <i class="fi-dashboard mt-n1 me-2 fs-lg opacity-70"></i>
+                  <span>{{ listing.mileage|intcomma }} miles</span>
+                </li>
+                <li class="col d-flex align-items-center">
+                  <i class="fi-gearbox mt-n1 me-2 fs-lg opacity-70"></i>
+                  <span>{{ listing.transmission }}</span>
+                </li>
+                <li class="col d-flex align-items-center">
+                  <i class="fi-petrol mt-n1 me-2 fs-lg opacity-70"></i>
+                  <span>{{ listing.fuel_type }}</span>
+                </li>
+                <li class="col d-flex align-items-center">
+                  <i class="fi-car-alt mt-n1 me-2 fs-lg opacity-70"></i>
+                  <span>{{ listing.body_type }}</span>
+                </li>
+                <li class="col d-flex align-items-center">
+                  <i class="fi-engine mt-n1 me-2 fs-lg opacity-70"></i>
+                  <span>{{ listing.engine_size }}</span>
+                </li>
+                <li class="col d-flex align-items-center">
+                  <i class="fi-color-palette mt-n1 me-2 fs-lg opacity-70"></i>
+                  <span>{{ listing.color }}</span>
+                </li>
+              </ul>
+
+              <!-- Seller details -->
+              <h2 class="h4 mb-4">Seller details</h2>
+              <div class="card text-body mb-5">
+                <div class="card-body d-flex">
+                  <div class="flex-shrink-0 d-flex align-items-start">
+                    <div class="avatar overflow-hidden rounded-circle me-3">
+                      <div class="bg-secondary d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                        <i class="fi-user text-light fs-4"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h5 class="mb-1">{{ listing.user.username }}</h5>
+                    <div class="fs-sm mb-3">Member since {{ listing.user.date_joined|date:"F Y" }}</div>
+                    {% if listing.user.profile.phone_number %}
+                      <div class="mb-1">
+                        <i class="fi-phone me-2 fs-sm opacity-70"></i>
+                        <span>{{ listing.user.profile.phone_number }}</span>
+                      </div>
+                    {% endif %}
+                    {% if listing.user.profile.location %}
+                      <div class="mb-1">
+                        <i class="fi-map-pin me-2 fs-sm opacity-70"></i>
+                        <span>{{ listing.user.profile.location }}</span>
+                      </div>
+                    {% endif %}
+                    <div class="pt-3">
+                      {% if user.is_authenticated and user != listing.user %}
+                        <a href="{% url 'new-conversation' listing.id %}" class="btn btn-primary w-100">
+                          <i class="fi-chat-circle me-2"></i>Contact seller
+                        </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <h2 class="h4 mb-4">Actions</h2>
+              <div class="mb-3">
+                <a href="{% url 'add_to_comparison' listing.id %}" class="btn btn-primary w-100">
+                  <i class="fi-list-check me-2"></i>
+                  Add to Comparison
+                </a>
+              </div>
+              
+              <!-- Sharing buttons -->
+              <h2 class="h4 mb-4">Share this car</h2>
+              <div class="d-flex mb-5">
+                <a href="#" class="btn btn-icon btn-secondary btn-facebook rounded-circle me-2">
+                  <i class="fi-facebook"></i>
+                </a>
+                <a href="#" class="btn btn-icon btn-secondary btn-twitter rounded-circle me-2">
+                  <i class="fi-twitter"></i>
+                </a>
+                <a href="#" class="btn btn-icon btn-secondary btn-instagram rounded-circle me-2">
+                  <i class="fi-instagram"></i>
+                </a>
+                <a href="#" class="btn btn-icon btn-secondary btn-linkedin rounded-circle">
+                  <i class="fi-linkedin"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Car details -->
+          <div class="col-md-7 col-lg-8">
+            <div class="ps-md-3">
+
+              <!-- Description -->
+              <h2 class="h4 mb-4">Description</h2>
+              <p class="mb-4">{{ listing.description|linebreaks }}</p>
+
+              <!-- Technical specifications -->
+              <h2 class="h4 pt-3 mb-4">Technical specifications</h2>
+              <div class="row mb-5">
+                <div class="col-sm-6 col-md-12 col-lg-6">
+                  <ul class="list-unstyled">
+                    <li class="mb-2">
+                      <strong class="me-1">Manufacturing Year:</strong>
+                      <span class="opacity-70">{{ listing.year }}</span>
+                    </li>
+                    <li class="mb-2">
+                      <strong class="me-1">Mileage:</strong>
+                      <span class="opacity-70">{{ listing.mileage|intcomma }} miles</span>
+                    </li>
+                    <li class="mb-2">
+                      <strong class="me-1">Body Type:</strong>
+                      <span class="opacity-70">{{ listing.body_type }}</span>
+                    </li>
+                    <li class="mb-2">
+                      <strong class="me-1">Color:</strong>
+                      <span class="opacity-70">{{ listing.color }}</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-sm-6 col-md-12 col-lg-6">
+                  <ul class="list-unstyled">
+                    <li class="mb-2">
+                      <strong class="me-1">Engine:</strong>
+                      <span class="opacity-70">{{ listing.engine_size }}</span>
+                    </li>
+                    <li class="mb-2">
+                      <strong class="me-1">Transmission:</strong>
+                      <span class="opacity-70">{{ listing.transmission }}</span>
+                    </li>
+                    <li class="mb-2">
+                      <strong class="me-1">Fuel Type:</strong>
+                      <span class="opacity-70">{{ listing.fuel_type }}</span>
+                    </li>
+                    <li class="mb-2">
+                      <strong class="me-1">Posted:</strong>
+                      <span class="opacity-70">{{ listing.created_at|date:"F j, Y" }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Actions for owner -->
+              {% if user.is_authenticated and user == listing.user %}
+                <div class="border-top border-light pt-4 mb-5">
+                  <div class="row g-3">
+                    <div class="col-sm-6">
+                      <a href="{% url 'listing-update' listing.id %}" class="btn btn-outline-primary w-100">
+                        <i class="fi-edit me-2"></i>Edit
+                      </a>
+                    </div>
+                    <div class="col-sm-6">
+                      <a href="{% url 'listing-delete' listing.id %}" class="btn btn-outline-danger w-100">
+                        <i class="fi-trash me-2"></i>Delete
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+
+              <!-- Similar cars (carousel) -->
+              <h2 class="h4 mb-4">You may also like</h2>
+              
+              <!-- Swiper slider -->
+              <div class="swiper swiper-initialized swiper-horizontal mb-5" data-swiper='{"slidesPerView": 1, "spaceBetween": 16, "pagination": {"el": ".swiper-pagination-sm", "clickable": true}, "navigation": {"prevEl": ".btn-prev-sm", "nextEl": ".btn-next-sm"}, "breakpoints": {"500": {"slidesPerView": 2}, "768": {"slidesPerView": 1}, "992": {"slidesPerView": 2}}}'>
+                <div class="swiper-wrapper">
+                  
+                  {% for similar_car in similar_listings %}
+                    <!-- Item -->
+                    <div class="swiper-slide h-auto">
+                      <div class="card card-light card-hover h-100">
+                        <div class="card-img-top card-img-hover">
+                          <a href="{% url 'listing-detail' similar_car.id %}" class="img-overlay"></a>
+                          {% if similar_car.get_main_image %}
+                            <img src="{{ similar_car.get_main_image }}" alt="{{ similar_car.make.name }} {{ similar_car.model.name }}">
+                          {% else %}
+                            <div class="bg-secondary h-100 d-flex align-items-center justify-content-center" style="min-height: 180px;">
+                              <i class="fi-car display-6 text-light"></i>
+                            </div>
+                          {% endif %}
+                          <div class="position-absolute start-0 top-0 pt-3 ps-3">
+                            <span class="d-table badge bg-info">{{ similar_car.year }}</span>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <div class="d-flex align-items-center justify-content-between pb-1">
+                            <span class="fs-sm text-muted">{{ similar_car.make.name }}</span>
+                          </div>
+                          <h3 class="h6 mb-1">
+                            <a class="nav-link" href="{% url 'listing-detail' similar_car.id %}">{{ similar_car.make.name }} {{ similar_car.model.name }}</a>
+                          </h3>
+                          <div class="text-primary fw-bold mb-1">${{ similar_car.price|floatformat:0|intcomma }}</div>
+                          <div class="fs-sm text-muted">{{ similar_car.mileage|intcomma }} miles</div>
+                        </div>
+                        <div class="card-footer border-0 pt-0">
+                          <div class="border-top border-light pt-3">
+                            <div class="row g-2">
+                              <div class="col me-sm-1">
+                                <div class="bg-dark bg-opacity-10 rounded text-center w-100 h-100 p-2">
+                                  <i class="fi-dashboard d-block h6 text-body mb-0"></i>
+                                  <span class="fs-xs">{{ similar_car.mileage|intcomma }}</span>
+                                </div>
+                              </div>
+                              <div class="col me-sm-1">
+                                <div class="bg-dark bg-opacity-10 rounded text-center w-100 h-100 p-2">
+                                  <i class="fi-gearbox d-block h6 text-body mb-0"></i>
+                                  <span class="fs-xs">{{ similar_car.transmission }}</span>
+                                </div>
+                              </div>
+                              <div class="col">
+                                <div class="bg-dark bg-opacity-10 rounded text-center w-100 h-100 p-2">
+                                  <i class="fi-petrol d-block h6 text-body mb-0"></i>
+                                  <span class="fs-xs">{{ similar_car.fuel_type }}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                                    
+                </div>
+
+                <!-- Pagination (bullets) -->
+                <div class="swiper-pagination swiper-pagination-sm position-relative pt-3 mt-3"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer pt-lg-5 pt-4 bg-dark text-light">
+      <div class="container pt-3 pb-4">
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="mb-4 pb-md-3">
+              <a class="d-inline-block mb-3" href="{% url 'home' %}">
+                <span class="text-light fs-4">
+                  <i class="fi-car-alt me-2"></i>
+                  <span>CarWay</span>
+                </span>
+              </a>
+              <p class="mb-3 opacity-70">The ultimate online platform for buying and selling cars.</p>
+              <div class="d-flex">
+                <a class="btn btn-icon btn-sm btn-secondary btn-facebook rounded-circle me-2" href="#"><i class="fi-facebook"></i></a>
+                <a class="btn btn-icon btn-sm btn-secondary btn-twitter rounded-circle me-2" href="#"><i class="fi-twitter"></i></a>
+                <a class="btn btn-icon btn-sm btn-secondary btn-instagram rounded-circle" href="#"><i class="fi-instagram"></i></a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-2 col-md-3 col-6">
+            <h4 class="fs-5 text-light mb-4">Quick Links</h4>
+            <ul class="nav flex-column opacity-70">
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'home' %}">Home</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'listing-list' %}">Browse Cars</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'search-listings' %}">Search</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'market_estimator' %}">Value Estimator</a></li>
+            </ul>
+          </div>
+          
+          <div class="col-lg-2 col-md-3 col-6">
+            <h4 class="fs-5 text-light mb-4">Account</h4>
+            <ul class="nav flex-column opacity-70">
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'login' %}">Login</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'register' %}">Register</a></li>
+              {% if user.is_authenticated %}
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'profile' %}">My Profile</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'inbox' %}">Messages</a></li>
+              {% endif %}
+            </ul>
+          </div>
+          
+          <div class="col-lg-4 col-md-6">
+            <h4 class="fs-5 text-light mb-4">Contact Us</h4>
+            <ul class="list-unstyled opacity-70">
+              <li class="d-flex mb-3">
+                <i class="fi-map-pin me-2 mt-1"></i>
+                <span>123 Car Street, Auto City</span>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="fi-phone me-2 mt-1"></i>
+                <span>+1 (555) 123-4567</span>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="fi-mail me-2 mt-1"></i>
+                <span>info@carway.com</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="text-center pt-4 mt-4 border-top border-white-10">
+          <p class="mb-0 opacity-70">&copy; {% now "Y" %} CarWay. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <a class="btn-scroll-top" href="#top" data-scroll>
+      <span class="btn-scroll-top-tooltip text-muted fs-sm me-2">Top</span>
+      <i class="btn-scroll-top-icon fi-chevron-up"></i>
+    </a>
+
+    <!-- Vendor scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'theme/vendor/simplebar/dist/simplebar.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/lightgallery/lightgallery.min.js' %}"></script>
+
+    <!-- Theme scripts -->
+    <script src="{% static 'theme/js/theme.min.js' %}"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+  </body>
+</html>

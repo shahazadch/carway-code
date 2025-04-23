@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Price Models | CarWay{% endblock %}
+
+{% block content %}
+<!-- Page container -->
+<div class="container mt-5 mb-md-4 py-5">
+  <!-- Breadcrumb -->
+  <nav class="mb-4 pt-md-3" aria-label="Breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'estimator-home' %}">Car Value Estimator</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Manage Models</li>
+    </ol>
+  </nav>
+
+  <!-- Page title -->
+  <div class="row align-items-end gy-3 mb-4 pb-lg-3 pb-1">
+    <div class="col-lg-7 col-md-8">
+      <h1 class="mb-2 mb-md-0">Manage Price Models</h1>
+    </div>
+    <div class="col-lg-5 col-md-4 text-md-end">
+      <a href="{% url 'train-model' %}" class="btn btn-primary">
+        <i class="fi-plus me-2"></i>
+        Train New Model
+      </a>
+    </div>
+  </div>
+
+  <!-- Models list -->
+  <div class="card">
+    <div class="card-body">
+      {% if page_obj %}
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>R² Score</th>
+                <th>MAE</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for model in page_obj %}
+                <tr>
+                  <td>
+                    <div class="fw-bold">{{ model.name }}</div>
+                    <div class="fs-sm text-muted">{{ model.description|truncatechars:50 }}</div>
+                  </td>
+                  <td>{{ model.created_at|date:"M d, Y" }}</td>
+                  <td>{% if model.r_squared %}{{ model.r_squared|floatformat:3 }}{% else %}N/A{% endif %}</td>
+                  <td>{% if model.mean_absolute_error %}{{ model.mean_absolute_error|floatformat:2 }}{% else %}N/A{% endif %}</td>
+                  <td>
+                    {% if model.is_active %}
+                      <span class="badge bg-success">Active</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="btn-group">
+                      {% if not model.is_active %}
+                        <a href="{% url 'set-active-model' model.id %}" class="btn btn-sm btn-outline-primary">
+                          <i class="fi-check me-1"></i>
+                          Set Active
+                        </a>
+                      {% endif %}
+                      <a href="{% url 'delete-model' model.id %}" class="btn btn-sm btn-outline-danger" 
+                         onclick="return confirm('Are you sure you want to delete this model?');">
+                        <i class="fi-trash me-1"></i>
+                        Delete
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+          <nav class="d-flex justify-content-center pt-4" aria-label="Pagination">
+            <ul class="pagination">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <i class="fi-chevron-left"></i>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link">
+                    <i class="fi-chevron-left"></i>
+                  </span>
+                </li>
+              {% endif %}
+
+              {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                  <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <i class="fi-chevron-right"></i>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link">
+                    <i class="fi-chevron-right"></i>
+                  </span>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="d-flex flex-column align-items-center py-5">
+          <i class="fi-folder-minus display-6 text-muted mb-4"></i>
+          <h5>No Models Found</h5>
+          <p class="text-muted">You haven't trained any price prediction models yet.</p>
+          <a href="{% url 'train-model' %}" class="btn btn-primary">
+            <i class="fi-plus me-2"></i>
+            Train First Model
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'theme_templates/base.html' %}
+{% load static %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-md-4 py-5">
+  <div class="row">
+    <!-- Sidebar -->
+    <aside class="col-lg-4 col-md-5 pe-xl-4 mb-5">
+      <div class="card card-body border-0 shadow-sm pb-1 me-lg-1">
+        <div class="d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4">
+          <div class="pt-md-2">
+            <h2 class="fs-lg mb-0">{{ request.user.username }}</h2>
+            <span class="star-rating">
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="collapse d-md-block" id="account-nav">
+          <div class="card-nav">
+            <a href="{% url 'profile' %}" class="card-nav-link">
+              <i class="fi-user me-2"></i>Personal Info
+            </a>
+            <a href="{% url 'notification-list' %}" class="card-nav-link active">
+              <i class="fi-bell me-2"></i>Notifications
+              <span class="badge bg-warning rounded-pill ms-2">{{ unread_count }}</span>
+            </a>
+            <a href="{% url 'notification-settings' %}" class="card-nav-link">
+              <i class="fi-settings me-2"></i>Notification Settings
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <div class="col-lg-8 col-md-7 mb-5">
+      <div class="d-flex align-items-center justify-content-between mb-4 pb-2">
+        <h1 class="h2 mb-0">Notifications</h1>
+        {% if page_obj %}
+        <form action="{% url 'notification-mark-all-read' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link fw-normal p-0">
+            <i class="fi-check me-2"></i>Mark all as read
+          </button>
+        </form>
+        {% endif %}
+      </div>
+
+      <!-- Notifications -->
+      {% if page_obj %}
+        <div class="notification-list">
+          {% for notification in page_obj %}
+            <div class="card shadow-sm mb-3 {% if not notification.is_read %}bg-light{% endif %}">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="badge 
+                    {% if notification.notification_type == 'message' %}bg-info
+                    {% elif notification.notification_type == 'listing_update' %}bg-success
+                    {% elif notification.notification_type == 'listing_interest' %}bg-warning
+                    {% endif %}">
+                    {{ notification.get_notification_type_display }}
+                  </span>
+                  <span class="text-muted fs-sm">{{ notification.created_at|timesince }} ago</span>
+                </div>
+                <h5 class="card-title mb-2">{{ notification.title }}</h5>
+                <p class="card-text">{{ notification.message }}</p>
+                {% if notification.url %}
+                <a href="{% url 'notification-mark-read' notification.id %}" class="btn btn-sm btn-primary">
+                  View Details
+                </a>
+                {% else %}
+                <a href="{% url 'notification-mark-read' notification.id %}" class="btn btn-sm btn-outline-secondary">
+                  Mark as Read
+                </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Notifications pages" class="mt-4">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                  <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                  <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+
+      {% else %}
+        <div class="card shadow-sm mb-3">
+          <div class="card-body text-center py-5">
+            <i class="fi-bell fs-1 text-muted mb-3"></i>
+            <h5>No notifications yet</h5>
+            <p class="text-muted">You don't have any notifications at the moment.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

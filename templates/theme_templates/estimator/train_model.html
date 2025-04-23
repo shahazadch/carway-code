@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Train New Model | CarWay{% endblock %}
+
+{% block content %}
+<!-- Page container -->
+<div class="container mt-5 mb-md-4 py-5">
+  <!-- Breadcrumb -->
+  <nav class="mb-4 pt-md-3" aria-label="Breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'estimator-home' %}">Car Value Estimator</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'manage-models' %}">Manage Models</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Train New Model</li>
+    </ol>
+  </nav>
+
+  <!-- Page title -->
+  <h1 class="mb-4 pb-2">Train New Price Model</h1>
+
+  <!-- Training form -->
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card px-sm-4 px-3 py-sm-4 py-3 shadow-sm mb-4">
+        <div class="card-body mx-n2">
+          <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="mb-4">
+              <label for="model_name" class="form-label">Model Name</label>
+              <input type="text" class="form-control" id="model_name" name="model_name" placeholder="e.g., Car Price Model v1" required>
+              <div class="invalid-feedback">Please provide a name for this model.</div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="model_description" class="form-label">Description</label>
+              <textarea class="form-control" id="model_description" name="model_description" rows="3" placeholder="Describe this model's purpose and data sources"></textarea>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label d-block mb-2">Model Type</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="model_type" id="random_forest" value="random_forest" checked>
+                <label class="form-check-label" for="random_forest">Random Forest</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="model_type" id="linear" value="linear">
+                <label class="form-check-label" for="linear">Linear Regression</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="model_type" id="gradient_boosting" value="gradient_boosting">
+                <label class="form-check-label" for="gradient_boosting">Gradient Boosting</label>
+              </div>
+            </div>
+            
+            <div class="alert alert-info mb-4">
+              <i class="fi-info-circle me-2"></i>
+              <span>Training will use existing car listings as data. Ensure you have at least 10 car listings for meaningful results.</span>
+            </div>
+            
+            <button type="submit" class="btn btn-lg btn-primary">
+              <i class="fi-refresh me-2"></i>
+              Train Model
+            </button>
+            <a href="{% url 'manage-models' %}" class="btn btn-link">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      <!-- Information card -->
+      <div class="card">
+        <div class="card-body">
+          <h3 class="h5 pb-2 mb-4">About Model Training</h3>
+          
+          <div class="d-flex mb-3">
+            <i class="fi-file-clean text-primary fs-lg mt-1 me-2"></i>
+            <div>
+              <h6 class="mb-1">Data Source</h6>
+              <p class="fs-sm mb-0">Models are trained using your existing car listings database. More listings provide better results.</p>
+            </div>
+          </div>
+          
+          <div class="d-flex mb-3">
+            <i class="fi-time text-primary fs-lg mt-1 me-2"></i>
+            <div>
+              <h6 class="mb-1">Training Time</h6>
+              <p class="fs-sm mb-0">Training typically takes a few seconds to complete. Larger datasets may take longer.</p>
+            </div>
+          </div>
+          
+          <div class="d-flex mb-3">
+            <i class="fi-settings text-primary fs-lg mt-1 me-2"></i>
+            <div>
+              <h6 class="mb-1">Model Types</h6>
+              <p class="fs-sm mb-0">
+                <strong>Random Forest:</strong> Best all-around performance<br>
+                <strong>Linear Regression:</strong> Faster but less accurate<br>
+                <strong>Gradient Boosting:</strong> High accuracy but may overfit
+              </p>
+            </div>
+          </div>
+          
+          <div class="d-flex">
+            <i class="fi-alert-circle text-primary fs-lg mt-1 me-2"></i>
+            <div>
+              <h6 class="mb-1">Important Note</h6>
+              <p class="fs-sm mb-0">Newly trained models will automatically become active for price predictions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

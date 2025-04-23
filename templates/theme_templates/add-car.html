@@ -1,0 +1,743 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light" data-pwa="true">
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+
+    <!-- SEO Meta Tags -->
+    <title>Add Car Listing | CarWay</title>
+    <meta name="description" content="CarWay - Sell your car online - Create a vehicle listing">
+    <meta name="keywords" content="sell car, automotive, sell vehicle, car listing, post car for sale">
+    <meta name="author" content="CarWay">
+
+    <!-- CSRF Token for AJAX requests -->
+    {% csrf_token %}
+
+    <!-- Webmanifest + Favicon / App icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="icon" type="image/png" href="{% static 'theme/img/favicon.png' %}" sizes="32x32">
+
+    <!-- Theme switcher (color modes) -->
+    <script src="{% static 'theme/js/theme-switcher.js' %}"></script>
+
+    <!-- Preloaded local web font (Inter) -->
+    <link rel="preload" href="{% static 'theme/fonts/inter-variable-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+
+    <!-- Font icons -->
+    <link rel="preload" href="{% static 'theme/icons/finder-icons.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{% static 'theme/icons/finder-icons.min.css' %}">
+
+    <!-- Vendor styles -->
+    <link rel="stylesheet" href="{% static 'theme/vendor/simplebar/dist/simplebar.min.css' %}">
+    <link rel="stylesheet" href="{% static 'theme/vendor/choices.js/public/assets/styles/choices.min.css' %}">
+    <link rel="stylesheet" href="{% static 'theme/vendor/nouislider/dist/nouislider.min.css' %}">
+
+    <!-- Bootstrap + Theme styles -->
+    <link rel="stylesheet" href="{% static 'theme/css/theme.min.css' %}" id="theme-styles">
+
+    <style>
+      /* Custom file upload styles */
+      .file-drop-area {
+        position: relative;
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        padding: 2.5rem;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        transition: .2s;
+        background-color: rgba(var(--bs-light-rgb), 0.9);
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .file-drop-area.is-active {
+        border-color: var(--bs-primary);
+      }
+      .file-drop-area .file-message {
+        font-size: 1.125rem;
+        margin-left: 1rem;
+        font-weight: 500;
+      }
+      .file-drop-area .file-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        cursor: pointer;
+        opacity: 0;
+        z-index: 10;
+      }
+      .file-drop-area .btn {
+        padding: 1rem 1.75rem;
+        font-size: 1rem;
+      }
+      .thumbnail-preview {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 1rem -0.5rem 0;
+      }
+      .thumbnail-preview .thumbnail {
+        position: relative;
+        margin: 0.5rem;
+        border-radius: 0.25rem;
+        flex: 0 0 calc(25% - 1rem);
+        max-width: calc(25% - 1rem);
+        overflow: hidden;
+        box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,.075);
+      }
+      .thumbnail-preview .thumbnail::before {
+        content: '';
+        display: block;
+        padding-top: 75%;
+      }
+      .thumbnail-preview .thumbnail img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .thumbnail-preview .thumbnail .remove-btn {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        background-color: rgba(255,255,255,0.8);
+        border: none;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: .2s;
+      }
+      .thumbnail-preview .thumbnail .remove-btn:hover {
+        background-color: var(--bs-danger);
+        color: white;
+      }
+      @media (max-width: 767.98px) {
+        .thumbnail-preview .thumbnail {
+          flex: 0 0 calc(33.33% - 1rem);
+          max-width: calc(33.33% - 1rem);
+        }
+      }
+      @media (max-width: 575.98px) {
+        .thumbnail-preview .thumbnail {
+          flex: 0 0 calc(50% - 1rem);
+          max-width: calc(50% - 1rem);
+        }
+      }
+    </style>
+  </head>
+
+
+  <!-- Body -->
+  <body>
+
+    <!-- Navigation bar (Page header) -->
+    <header class="navbar navbar-expand-lg bg-body navbar-sticky sticky-top z-fixed px-0" data-sticky-element>
+      <div class="container">
+
+        <!-- Mobile offcanvas menu toggler (Hamburger) -->
+        <button type="button" class="navbar-toggler me-3 me-lg-0" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar brand (Logo) -->
+        <a class="navbar-brand py-1 py-md-2 py-xl-1 me-2 me-sm-n4 me-md-n5 me-lg-0" href="{% url 'home' %}">
+          <span class="d-none d-sm-flex flex-shrink-0 text-primary rtl-flip me-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="34"><path d="M34.5 16.894v10.731c0 3.506-2.869 6.375-6.375 6.375H17.5h-.85C7.725 33.575.5 26.138.5 17c0-9.35 7.65-17 17-17s17 7.544 17 16.894z" fill="currentColor"/><g fill-rule="evenodd"><path d="M17.5 13.258c-3.101 0-5.655 2.554-5.655 5.655s2.554 5.655 5.655 5.655 5.655-2.554 5.655-5.655-2.554-5.655-5.655-5.655zm-9.433 5.655c0-5.187 4.246-9.433 9.433-9.433s9.433 4.246 9.433 9.433a9.36 9.36 0 0 1-1.569 5.192l2.397 2.397a1.89 1.89 0 0 1 0 2.671 1.89 1.89 0 0 1-2.671 0l-2.397-2.397a9.36 9.36 0 0 1-5.192 1.569c-5.187 0-9.433-4.246-9.433-9.433z" fill="#000" fill-opacity=".05"/><g fill="#fff"><path d="M17.394 10.153c-3.723 0-6.741 3.018-6.741 6.741s3.018 6.741 6.741 6.741 6.741-3.018 6.741-6.741-3.018-6.741-6.741-6.741zM7.347 16.894A10.05 10.05 0 0 1 17.394 6.847 10.05 10.05 0 0 1 27.44 16.894 10.05 10.05 0 0 1 17.394 26.94 10.05 10.05 0 0 1 7.347 16.894z"/><path d="M23.025 22.525c.645-.645 1.692-.645 2.337 0l3.188 3.188c.645.645.645 1.692 0 2.337s-1.692.645-2.337 0l-3.187-3.187c-.645-.646-.645-1.692 0-2.337z"/></g></g><path d="M23.662 14.663c2.112 0 3.825-1.713 3.825-3.825s-1.713-3.825-3.825-3.825-3.825 1.713-3.825 3.825 1.713 3.825 3.825 3.825z" fill="#fff"/><path fill-rule="evenodd" d="M23.663 8.429a2.41 2.41 0 0 0-2.408 2.408 2.41 2.41 0 0 0 2.408 2.408 2.41 2.41 0 0 0 2.408-2.408 2.41 2.41 0 0 0-2.408-2.408zm-5.242 2.408c0-2.895 2.347-5.242 5.242-5.242s5.242 2.347 5.242 5.242-2.347 5.242-5.242 5.242-5.242-2.347-5.242-5.242z" fill="currentColor"/></svg>
+          </span>
+          CarWay
+        </a>
+
+        <!-- Main navigation -->
+        <nav class="offcanvas offcanvas-start" id="navbarNav" tabindex="-1" aria-labelledby="navbarNavLabel">
+          <div class="offcanvas-header py-3">
+            <h5 class="offcanvas-title" id="navbarNavLabel">Browse CarWay</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body pt-2 pb-4 py-lg-0 mx-lg-auto">
+            <ul class="navbar-nav position-relative">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'listing-list' %}">Browse Cars</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'search-listings' %}">Search</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'market_estimator' %}">Value Estimator</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Right aligned nav elements -->
+        <div class="d-sm-flex align-items-center ms-auto">
+          {% if user.is_authenticated %}
+            <div class="d-flex align-items-center me-3">
+              <a href="{% url 'inbox' %}" class="nav-link text-nowrap position-relative me-3 {% if '/messages/inbox/' in request.path %}active{% endif %}">
+                <i class="fi-chat-circle fs-xxl"></i>
+                {% with unread_count=user.profile.unread_message_count %}
+                  {% if unread_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                    {{ unread_count }}
+                  </span>
+                  {% endif %}
+                {% endwith %}
+              </a>
+            </div>
+            
+            <div class="dropdown d-inline-block">
+              <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fi-user me-2"></i>
+                <span>{{ user.username }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'user-listings' user.username %}">My Listings</a></li>
+                <li><a class="dropdown-item" href="{% url 'listing-create' %}">Create Listing</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-sm rounded-pill order-lg-3 me-2">
+              <i class="fi-user me-2"></i>Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm rounded-pill order-lg-3">
+              Register
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="content-wrapper">
+      <section class="container pt-3 pt-sm-4 pb-5">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-2 pb-1 pt-2">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'listing-list' %}">Cars</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Car</li>
+          </ol>
+        </nav>
+
+        <!-- Page title -->
+        <h1 class="h2 pb-3">Sell Your Car</h1>
+
+        <!-- Messages display -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Added car form -->
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <!-- Car details -->
+            <section class="card card-body border-0 shadow-sm p-4 mb-4">
+              <form method="post" enctype="multipart/form-data" id="car-listing-form">
+                {% csrf_token %}
+                <h2 class="h4 mb-4"><i class="fi-car text-primary fs-5 mt-n1 me-2"></i>Car Details</h2>
+                <!-- Form errors -->
+                {% if form.errors %}
+                  <div class="alert alert-danger">
+                    <h6 class="alert-heading">Please fix the following errors:</h6>
+                    {{ form.non_field_errors }}
+                  </div>
+                {% endif %}
+
+                <!-- Make & Model -->
+                <div class="row mb-3">
+                  <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="id_make" class="form-label">Car make <span class="text-danger">*</span></label>
+                    {{ form.make }}
+                    {% if form.make.errors %}
+                      <div class="invalid-feedback d-block">{{ form.make.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-6">
+                    <label for="id_model" class="form-label">Car model <span class="text-danger">*</span></label>
+                    {{ form.model }}
+                    {% if form.model.errors %}
+                      <div class="invalid-feedback d-block">{{ form.model.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Year, Mileage, Price -->
+                <div class="row mb-3">
+                  <div class="col-md-3 mb-3 mb-md-0">
+                    <label for="id_year" class="form-label">Year <span class="text-danger">*</span></label>
+                    {{ form.year }}
+                    {% if form.year.errors %}
+                      <div class="invalid-feedback d-block">{{ form.year.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="id_mileage" class="form-label">Mileage <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      {{ form.mileage }}
+                      <span class="input-group-text">miles</span>
+                    </div>
+                    {% if form.mileage.errors %}
+                      <div class="invalid-feedback d-block">{{ form.mileage.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-5">
+                    <label for="id_price" class="form-label">Price <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text">$</span>
+                      {{ form.price }}
+                    </div>
+                    {% if form.price.errors %}
+                      <div class="invalid-feedback d-block">{{ form.price.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Engine size, Fuel type, Transmission -->
+                <div class="row mb-3">
+                  <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="id_engine_size" class="form-label">Engine size</label>
+                    {{ form.engine_size }}
+                    {% if form.engine_size.errors %}
+                      <div class="invalid-feedback d-block">{{ form.engine_size.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="id_fuel_type" class="form-label">Fuel type <span class="text-danger">*</span></label>
+                    {{ form.fuel_type }}
+                    {% if form.fuel_type.errors %}
+                      <div class="invalid-feedback d-block">{{ form.fuel_type.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-4">
+                    <label for="id_transmission" class="form-label">Transmission <span class="text-danger">*</span></label>
+                    {{ form.transmission }}
+                    {% if form.transmission.errors %}
+                      <div class="invalid-feedback d-block">{{ form.transmission.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Body type, Color -->
+                <div class="row mb-3">
+                  <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="id_body_type" class="form-label">Body type <span class="text-danger">*</span></label>
+                    {{ form.body_type }}
+                    {% if form.body_type.errors %}
+                      <div class="invalid-feedback d-block">{{ form.body_type.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-6">
+                    <label for="id_color" class="form-label">Color <span class="text-danger">*</span></label>
+                    {{ form.color }}
+                    {% if form.color.errors %}
+                      <div class="invalid-feedback d-block">{{ form.color.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                  <label for="id_description" class="form-label">Description <span class="text-danger">*</span></label>
+                  {{ form.description }}
+                  {% if form.description.errors %}
+                    <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+                  {% endif %}
+                  <div class="form-text">Include condition, features, and other details potential buyers should know.</div>
+                </div>
+
+                <!-- Photos upload -->
+                <h2 class="h4 mb-4"><i class="fi-image text-primary fs-5 mt-n1 me-2"></i>Vehicle Photos</h2>
+                <div class="mb-3">
+                  <div class="file-drop-area">
+                    <div class="file-drop-icon text-primary"><i class="fi-upload fs-3 me-2"></i></div>
+                    <div class="file-message">
+                      Drag and drop your photos here <span class="d-none d-sm-inline">or click to browse</span>
+                    </div>
+                    {{ formset.management_form }}
+                    <div id="image-fields" class="d-none">
+                      {% for form in formset %}
+                        <div class="image-field">
+                          {{ form.id }}
+                          {{ form.image }}
+                          {% if form.image.errors %}
+                            <div class="invalid-feedback d-block">{{ form.image.errors }}</div>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                    <input type="file" class="file-input" accept="image/*" multiple>
+                  </div>
+                  <div class="form-text">
+                    Upload up to 5 photos. Up to 5MB each. First image will be used as the main listing photo.
+                  </div>
+                  <div class="thumbnail-preview"></div>
+                </div>
+
+                <!-- Submit button -->
+                <div class="d-flex justify-content-end">
+                  <a href="{% url 'listing-list' %}" class="btn btn-outline-primary me-3">Cancel</a>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fi-plus me-2"></i>
+                    Create Listing
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="col-lg-4 position-relative">
+            <div class="sticky-top" style="top: 105px;">
+              <!-- Tips -->
+              <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                  <h3 class="h5 card-title"><i class="fi-alert-circle text-primary fs-5 mt-n1 me-2"></i>Listing Tips</h3>
+                  <ul class="list-unstyled mb-0">
+                    <li class="d-flex mb-2">
+                      <i class="fi-check text-primary mt-1 me-2"></i>
+                      <span>Use clear, high-quality photos from multiple angles</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <i class="fi-check text-primary mt-1 me-2"></i>
+                      <span>Be honest about the car's condition and history</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <i class="fi-check text-primary mt-1 me-2"></i>
+                      <span>Research similar cars to ensure your price is competitive</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <i class="fi-check text-primary mt-1 me-2"></i>
+                      <span>Include all important features and recent repairs</span>
+                    </li>
+                    <li class="d-flex">
+                      <i class="fi-check text-primary mt-1 me-2"></i>
+                      <span>Respond quickly to inquiries from potential buyers</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Safety tips -->
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h3 class="h5 card-title"><i class="fi-shield text-primary fs-5 mt-n1 me-2"></i>Safety Tips</h3>
+                  <ul class="list-unstyled mb-0">
+                    <li class="d-flex mb-2">
+                      <i class="fi-alert-circle text-warning mt-1 me-2"></i>
+                      <span>Meet buyers in public, well-lit locations</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <i class="fi-alert-circle text-warning mt-1 me-2"></i>
+                      <span>Don't share personal financial information</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <i class="fi-alert-circle text-warning mt-1 me-2"></i>
+                      <span>Be careful of payment scams and fake checks</span>
+                    </li>
+                    <li class="d-flex">
+                      <i class="fi-alert-circle text-warning mt-1 me-2"></i>
+                      <span>Trust your instincts if something seems suspicious</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer pt-lg-5 pt-4 bg-dark text-light">
+      <div class="container pt-3 pb-4">
+        <div class="row">
+          <div class="col-lg-4 col-md-6">
+            <div class="mb-4 pb-md-3">
+              <a class="d-inline-block mb-3" href="{% url 'home' %}">
+                <span class="text-light fs-4">
+                  <i class="fi-car-alt me-2"></i>
+                  <span>CarWay</span>
+                </span>
+              </a>
+              <p class="mb-3 opacity-70">The ultimate online platform for buying and selling cars.</p>
+              <div class="d-flex">
+                <a class="btn btn-icon btn-sm btn-secondary btn-facebook rounded-circle me-2" href="#"><i class="fi-facebook"></i></a>
+                <a class="btn btn-icon btn-sm btn-secondary btn-twitter rounded-circle me-2" href="#"><i class="fi-twitter"></i></a>
+                <a class="btn btn-icon btn-sm btn-secondary btn-instagram rounded-circle" href="#"><i class="fi-instagram"></i></a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-2 col-md-3 col-6">
+            <h4 class="fs-5 text-light mb-4">Quick Links</h4>
+            <ul class="nav flex-column opacity-70">
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'home' %}">Home</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'listing-list' %}">Browse Cars</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'search-listings' %}">Search</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'market_estimator' %}">Value Estimator</a></li>
+            </ul>
+          </div>
+          
+          <div class="col-lg-2 col-md-3 col-6">
+            <h4 class="fs-5 text-light mb-4">Account</h4>
+            <ul class="nav flex-column opacity-70">
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'login' %}">Login</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'register' %}">Register</a></li>
+              {% if user.is_authenticated %}
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'profile' %}">My Profile</a></li>
+              <li class="nav-item mb-2"><a class="nav-link p-0" href="{% url 'inbox' %}">Messages</a></li>
+              {% endif %}
+            </ul>
+          </div>
+          
+          <div class="col-lg-4 col-md-6">
+            <h4 class="fs-5 text-light mb-4">Contact Us</h4>
+            <ul class="list-unstyled opacity-70">
+              <li class="d-flex mb-3">
+                <i class="fi-map-pin me-2 mt-1"></i>
+                <span>123 Car Street, Auto City</span>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="fi-phone me-2 mt-1"></i>
+                <span>+1 (555) 123-4567</span>
+              </li>
+              <li class="d-flex mb-3">
+                <i class="fi-mail me-2 mt-1"></i>
+                <span>info@carway.com</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="text-center pt-4 mt-4 border-top border-white-10">
+          <p class="mb-0 opacity-70">&copy; {% now "Y" %} CarWay. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <a class="btn-scroll-top" href="#top" data-scroll>
+      <span class="btn-scroll-top-tooltip text-muted fs-sm me-2">Top</span>
+      <i class="btn-scroll-top-icon fi-chevron-up"></i>
+    </a>
+
+    <!-- Vendor scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'theme/vendor/simplebar/dist/simplebar.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/choices.js/public/assets/scripts/choices.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/cleave.js/dist/cleave.min.js' %}"></script>
+    <script src="{% static 'theme/vendor/nouislider/dist/nouislider.min.js' %}"></script>
+    
+    <!-- Theme scripts -->
+    <script src="{% static 'theme/js/theme.min.js' %}"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Choices for select elements
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+          new Choices(select, {
+            searchEnabled: ['id_make', 'id_model'].includes(select.id),
+            shouldSort: false,
+            placeholder: true,
+            itemSelectText: ''
+          });
+        });
+        
+        // Format price input with Cleave.js
+        if (document.getElementById('id_price')) {
+          new Cleave('#id_price', {
+            numeral: true,
+            numeralThousandsGroupStyle: 'thousand'
+          });
+        }
+        
+        // Format mileage input with Cleave.js
+        if (document.getElementById('id_mileage')) {
+          new Cleave('#id_mileage', {
+            numeral: true,
+            numeralThousandsGroupStyle: 'thousand'
+          });
+        }
+        
+        // Make/model connection
+        const makeSelect = document.getElementById('id_make');
+        const modelSelect = document.getElementById('id_model');
+        
+        if (makeSelect && modelSelect) {
+          const modelChoicesInstance = document.querySelector('#id_model').closest('.choices').choices;
+          
+          makeSelect.addEventListener('change', function() {
+            const makeId = this.value;
+            
+            if (!makeId) {
+              modelChoicesInstance.clearStore();
+              modelChoicesInstance.setChoices([{ value: '', label: '---------', selected: true }]);
+              return;
+            }
+            
+            fetch(`/listings/ajax/load-models/?make=${makeId}`)
+              .then(response => response.text())
+              .then(html => {
+                // Create a temporary element to parse the HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const options = tempDiv.querySelectorAll('option');
+                
+                // Clear existing choices
+                modelChoicesInstance.clearStore();
+                
+                // Add placeholder option first
+                modelChoicesInstance.setChoices([{ value: '', label: '---------', selected: true }]);
+                
+                // Add new options
+                const choiceOptions = Array.from(options).map(option => {
+                  return {
+                    value: option.value,
+                    label: option.textContent
+                  };
+                });
+                
+                modelChoicesInstance.setChoices(choiceOptions, 'value', 'label', false);
+              });
+          });
+        }
+        
+        // Image upload handling
+        const dropArea = document.querySelector('.file-drop-area');
+        const fileInput = dropArea.querySelector('.file-input');
+        const preview = document.querySelector('.thumbnail-preview');
+        const imageFields = document.querySelectorAll('#image-fields .image-field input[type="file"]');
+        const maxFiles = 5;
+        
+        // Track uploaded files
+        let files = [];
+        
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+          dropArea.addEventListener(eventName, function() {
+            dropArea.classList.add('is-active');
+          });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+          dropArea.addEventListener(eventName, function() {
+            dropArea.classList.remove('is-active');
+          });
+        });
+        
+        // Handle file drop
+        dropArea.addEventListener('drop', function(e) {
+          e.preventDefault();
+          const droppedFiles = e.dataTransfer.files;
+          handleFiles(droppedFiles);
+        });
+        
+        // Handle file selection
+        fileInput.addEventListener('change', function() {
+          handleFiles(this.files);
+        });
+        
+        function handleFiles(selectedFiles) {
+          if (!selectedFiles || !selectedFiles.length) return;
+          
+          // Convert FileList to Array and add to existing files
+          const newFiles = Array.from(selectedFiles);
+          
+          // Check if adding new files would exceed the limit
+          if (files.length + newFiles.length > maxFiles) {
+            alert(`You can upload a maximum of ${maxFiles} images.`);
+            return;
+          }
+          
+          // Add new files to the array
+          files = [...files, ...newFiles];
+          
+          // Update the preview
+          updatePreview();
+          
+          // Assign files to Django formset fields
+          assignFilesToFormset();
+        }
+        
+        function updatePreview() {
+          // Clear preview
+          preview.innerHTML = '';
+          
+          // Add thumbnails for each file
+          files.forEach((file, index) => {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const thumbnail = document.createElement('div');
+              thumbnail.className = 'thumbnail';
+              thumbnail.innerHTML = `
+                <img src="${e.target.result}" alt="Image ${index + 1}">
+                <button type="button" class="remove-btn" data-index="${index}">×</button>
+              `;
+              preview.appendChild(thumbnail);
+              
+              // Add event listener to remove button
+              thumbnail.querySelector('.remove-btn').addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                files.splice(index, 1);
+                updatePreview();
+                assignFilesToFormset();
+              });
+            };
+            
+            reader.readAsDataURL(file);
+          });
+        }
+        
+        function assignFilesToFormset() {
+          // Clear all formset fields first
+          imageFields.forEach(field => {
+            // Create a new FileList-like object
+            const dataTransfer = new DataTransfer();
+            field.files = dataTransfer.files;
+          });
+          
+          // Assign each file to a formset field
+          files.forEach((file, index) => {
+            if (index < imageFields.length) {
+              // Create a new FileList-like object
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file);
+              
+              // Assign the file to the field
+              imageFields[index].files = dataTransfer.files;
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

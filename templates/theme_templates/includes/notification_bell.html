@@ -1,0 +1,66 @@
+{% if user.is_authenticated %}
+<div class="nav-item dropdown me-2">
+  <a class="nav-link p-0 position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fi-bell fs-lg"></i>
+    {% with unread_count=user.notifications.all|length %}
+      {% if unread_count > 0 %}
+        <span id="notification-count" class="badge bg-danger position-absolute top-0 end-0" style="font-size: 0.6rem; transform: translate(25%, -25%);">
+          {{ unread_count }}
+        </span>
+      {% endif %}
+    {% endwith %}
+  </a>
+  <div class="dropdown-menu dropdown-menu-end dropdown-menu-sm-end" style="width: 320px; max-height: 400px; overflow-y: auto;">
+    <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+      <h6 class="mb-0">Notifications</h6>
+      {% with unread_count=user.notifications.all|length %}
+        {% if unread_count > 0 %}
+          <form action="{% url 'notification-mark-all-read' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link btn-sm p-0 text-primary">Mark all as read</button>
+          </form>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    {% with all_notifications=user.notifications.all %}
+      {% if all_notifications %}
+        <div class="notification-dropdown-list">
+          {% for notification in all_notifications|slice:":5" %}
+            <a href="{% url 'notification-mark-read' notification.id %}" class="dropdown-item py-2 {% if not notification.is_read %}bg-light{% endif %}">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-2">
+                  {% if notification.notification_type == 'message' %}
+                  <i class="fi-chat-left text-info"></i>
+                  {% elif notification.notification_type == 'listing_update' %}
+                  <i class="fi-car text-success"></i>
+                  {% elif notification.notification_type == 'listing_interest' %}
+                  <i class="fi-star text-warning"></i>
+                  {% endif %}
+                </div>
+                <div class="flex-grow-1 pe-2">
+                  <p class="mb-0 text-truncate">{{ notification.title }}</p>
+                  <span class="fs-xs text-muted">{{ notification.created_at|timesince }} ago</span>
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+
+        {% with notification_count=all_notifications|length %}
+          {% if notification_count > 5 %}
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'notification-list' %}" class="dropdown-item text-center py-2">
+              View all notifications ({{ notification_count }})
+            </a>
+          {% endif %}
+        {% endwith %}
+      {% else %}
+        <div class="p-3 text-center">
+          <p class="mb-0 text-muted">No notifications yet</p>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+</div>
+{% endif %}

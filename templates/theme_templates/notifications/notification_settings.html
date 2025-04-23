@@ -1,0 +1,106 @@
+{% extends 'theme_templates/base.html' %}
+{% load static %}
+
+{% block title %}Notification Settings{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-md-4 py-5">
+  <div class="row">
+    <!-- Sidebar -->
+    <aside class="col-lg-4 col-md-5 pe-xl-4 mb-5">
+      <div class="card card-body border-0 shadow-sm pb-1 me-lg-1">
+        <div class="d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4">
+          <div class="pt-md-2">
+            <h2 class="fs-lg mb-0">{{ request.user.username }}</h2>
+            <span class="star-rating">
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star-filled active"></i>
+              <i class="star-rating-icon fi-star"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="collapse d-md-block" id="account-nav">
+          <div class="card-nav">
+            <a href="{% url 'profile' %}" class="card-nav-link">
+              <i class="fi-user me-2"></i>Personal Info
+            </a>
+            <a href="{% url 'notification-list' %}" class="card-nav-link">
+              <i class="fi-bell me-2"></i>Notifications
+            </a>
+            <a href="{% url 'notification-settings' %}" class="card-nav-link active">
+              <i class="fi-settings me-2"></i>Notification Settings
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <div class="col-lg-8 col-md-7 mb-5">
+      <div class="d-flex align-items-center justify-content-between mb-4 pb-2">
+        <h1 class="h2 mb-0">Notification Settings</h1>
+      </div>
+
+      <form action="{% url 'notification-settings' %}" method="post">
+        {% csrf_token %}
+        
+        <!-- Email Notification Settings -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="fi-mail me-2 text-primary"></i>Email Notifications</h5>
+          </div>
+          <div class="card-body">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="email_messages" name="email_messages" {% if settings.email_messages %}checked{% endif %}>
+              <label class="form-check-label" for="email_messages">New Messages</label>
+              <div class="text-muted fs-sm">Receive email notifications when you get new messages</div>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="email_listing_updates" name="email_listing_updates" {% if settings.email_listing_updates %}checked{% endif %}>
+              <label class="form-check-label" for="email_listing_updates">Listing Updates</label>
+              <div class="text-muted fs-sm">Receive email notifications when listings you're interested in are updated</div>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="email_listing_interest" name="email_listing_interest" {% if settings.email_listing_interest %}checked{% endif %}>
+              <label class="form-check-label" for="email_listing_interest">Listing Interest</label>
+              <div class="text-muted fs-sm">Receive email notifications when someone is interested in your listings</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- On-site Notification Settings -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="fi-bell me-2 text-primary"></i>On-site Notifications</h5>
+          </div>
+          <div class="card-body">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="onsite_messages" name="onsite_messages" {% if settings.onsite_messages %}checked{% endif %}>
+              <label class="form-check-label" for="onsite_messages">New Messages</label>
+              <div class="text-muted fs-sm">Receive on-site notifications when you get new messages</div>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="onsite_listing_updates" name="onsite_listing_updates" {% if settings.onsite_listing_updates %}checked{% endif %}>
+              <label class="form-check-label" for="onsite_listing_updates">Listing Updates</label>
+              <div class="text-muted fs-sm">Receive on-site notifications when listings you're interested in are updated</div>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="onsite_listing_interest" name="onsite_listing_interest" {% if settings.onsite_listing_interest %}checked{% endif %}>
+              <label class="form-check-label" for="onsite_listing_interest">Listing Interest</label>
+              <div class="text-muted fs-sm">Receive on-site notifications when someone is interested in your listings</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <a href="{% url 'notification-list' %}" class="btn btn-outline-secondary ms-3">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
